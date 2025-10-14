@@ -2,12 +2,15 @@ import express from "express";
 import dotenv from "dotenv";
 import { generateProposal } from "./openai/proposalGenerator.mjs";
 import { saveBidHistory } from "./controller/save-bid-history-controller.mjs";
-
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: '*'
+}));
 
 // === POST route to generate proposal ===
 app.post("/generate-proposal", async (req, res) => {
