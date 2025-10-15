@@ -1,9 +1,10 @@
 import db from "../config/firebase-config.mjs"
+import {v4} from 'uuid'
 
 export const saveBidService= (body)=>{
 
     try{
-        db.collection('bids').doc('co-ventech')
+        db.collection('bids').doc(v4())
         .set({
             ...body
         });
