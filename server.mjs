@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { generateProposal } from "./openai/proposalGenerator.mjs";
-import { saveBidHistory } from "./controller/save-bid-history-controller.mjs";
+import { getSavedBidController, saveBidHistoryController } from "./controller/bid-controller.mjs";
 import cors from "cors";
 
 dotenv.config();
@@ -33,7 +33,10 @@ app.post("/generate-proposal", async (req, res) => {
 });
 
 
-app.post('/save-bid-history', saveBidHistory)
+app.post('/save-bid-history', saveBidHistoryController);
+app.get('/bids', getSavedBidController)
+
+
 // === Start the server ===
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
