@@ -10,5 +10,5 @@ export const saveBidHistoryController = async (req, res) => {
 
 export const getSavedBidController = async (req, res) => {
     const result = await getSavedBidsService(req?.query);
-    return res.status(result.status).send({...result})
+    return res.status(result.status).send({ ...result })
 }

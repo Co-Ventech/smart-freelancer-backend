@@ -27,6 +27,14 @@ export const getSavedBidsService = async (query) => {
 
     try {
         let snapshot = bidCollection;
+        if (query?.bid_id) {
+            const data = (await snapshot.doc(query?.bid_id).get()).data();
+            return {
+                status: 200,
+                message: "Bids fetched successfully",
+                data: data
+            }
+        }
         if (query?.bid_type) {
             snapshot = snapshot.where('bid_type', '==', query?.bid_type); //eg: manual, auto
         }
