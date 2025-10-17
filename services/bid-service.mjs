@@ -3,16 +3,20 @@ import { v4 } from 'uuid'
 
 const bidCollection = db.collection('bids')
 
-export const saveBidService = (body) => {
+export const saveBidService = async(body) => {
 
     try {
-        bidCollection.doc(v4())
+        const generatedUUID= v4();
+        await bidCollection.doc(generatedUUID)
             .set({
                 ...body
             });
+
+        const data = (await bidCollection.doc(generatedUUID).get()).data();
         return {
             status: 200,
-            message: "Bid Saved Successfully"
+            message: "Bid Saved Successfully",
+            data: data
         }
     } catch (e) {
         console.log(e)
@@ -43,7 +47,7 @@ export const getSavedBidsService = async (query) => {
                 ? query.bidder_id              // e.g. "MANUAL_BIDDER"
                 : Number(query.bidder_id);     // e.g. 88454359 as number
 
-            snapshot = snapshot.where('project_id.result.bidder_id', '==', bidderId); //bidded from zameer, zubair, co-ventech, ahsan's bidder id
+            snapshot = snapshot.where('bidder_id', '==', bidderId); //bidded from zameer, zubair, co-ventech, ahsan's bidder id
         }
 
         const querySnapshot = await snapshot.get();

@@ -1,10 +1,11 @@
 import { getSavedBidsService, saveBidService } from "../services/bid-service.mjs"
 
 export const saveBidHistoryController = async (req, res) => {
-    const result = saveBidService(req.body);
+    const result = await saveBidService(req.body);
     return res.status(result.status).send({
         status: result.status,
-        message: result.message
+        message: result.message,
+        data: result.data
     })
 }
 
