@@ -59,7 +59,7 @@ Follow these exact rules:
   https://drivefds.com/
   https://gfsbuilders.com.pk/
   https://bachatt.com/
-- End with a polite closing similar to: “Looking forward to hearing more about your vision...” and “Best Regards and ${name}”
+- End with a polite closing similar to: “Looking forward to hearing more about your vision...” and “Best Regards \n ${name}”
 `;
 
     try {
