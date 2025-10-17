@@ -14,7 +14,7 @@ app.use(cors({
 
 // === POST route to generate proposal ===
 app.post("/generate-proposal", async (req, res) => {
-  const { id, title, description } = req.body;
+  const { id, title, description, name } = req.body;
 
   if (!title || !description) {
     return res.status(400).json({ error: "Missing title or description." });
@@ -22,7 +22,7 @@ app.post("/generate-proposal", async (req, res) => {
 
   console.log(`🟢 Generating proposal for: ${title}`);
 
-  const proposalText = await generateProposal(title, description);
+  const proposalText = await generateProposal(title, description, name);
 
   res.json({
     id: id || null,

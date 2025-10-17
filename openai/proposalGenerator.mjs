@@ -25,7 +25,7 @@ if (!universalTemplate) {
 }
 
 // === Function to generate proposal ===
-export async function generateProposal(title, description) {
+export async function generateProposal(title, description, name) {
     const prompt = `
 You are a professional freelancer crafting proposals for clients on Freelancer.com.
 
@@ -46,7 +46,7 @@ Job Description: ${description}
 Follow these exact rules:
 - Start with “Hey, how are you?” or “Hi, how are you?”
 - Second line: Start with "Although I am new to freelancer, I have over 5 years of experience in [client's related domain/skill/issue]", and express confidence in solving the client’s main issue.
-- Third and fourth lines: briefly explain your relevant experience and skills (align with job).
+- Third and fourth lines: briefly explain your relevant experience and skills (align with job) In this section also make sure that if the Job aligns with any of the domains such as Web Development, QA, UIUX, Wordpress, etc , then add these domain specific skills as well here such as for QA, add skills like Cypress, Selenium , Automation Testing, Manual Testing, similarly if for Wordpress then add skills such as React.js, Node.js, Mongo DB , etc. Make sure that they are relevant to the job as well and not very lenghty.
 - Include this section exactly:
   You can review a few of my past work:
   https://app.recruitinn.ai
@@ -59,7 +59,7 @@ Follow these exact rules:
   https://drivefds.com/
   https://gfsbuilders.com.pk/
   https://bachatt.com/
-- End with a polite closing similar to: “Looking forward to hearing more about your vision...” and “Thank you.”
+- End with a polite closing similar to: “Looking forward to hearing more about your vision...” and “Best Regards and ${name}”
 `;
 
     try {
