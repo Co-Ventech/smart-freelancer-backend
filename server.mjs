@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { generateProposal } from "./openai/proposalGenerator.mjs";
 import { getSavedBidController, saveBidHistoryController } from "./controller/bid-controller.mjs";
+import { applyKpisToSavedBids } from "./controller/freelancer-kpi-controller.mjs";
 import cors from "cors";
 
 dotenv.config();
@@ -35,6 +36,8 @@ app.post("/generate-proposal", async (req, res) => {
 
 app.post('/save-bid-history', saveBidHistoryController);
 app.get('/bids', getSavedBidController)
+app.get("/kpis/score-saved-bids", applyKpisToSavedBids);
+
 
 
 // === Start the server ===
