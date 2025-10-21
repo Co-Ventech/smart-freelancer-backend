@@ -7,12 +7,12 @@ const bidCollection = db.collection('bids')
 export const saveBidService = async (body) => {
 
     try {
-        const scoredJobs = scoreJob(...body);
+        const scoredJobs = scoreJob(body);
         const generatedUUID = v4();
         await bidCollection.doc(generatedUUID)
             .set({
+                scores: scoredJobs.scores,
                 ...body,
-                scores: scoredJobs.scores
             });
 
         const data = (await bidCollection.doc(generatedUUID).get()).data();
