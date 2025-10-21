@@ -44,8 +44,8 @@ export const getSavedBidsService = async (query) => {
                 data: data
             }
         }
-        if (query?.bid_type) {
-            snapshot = snapshot.where('bid_type', '==', query?.bid_type); //eg: manual, auto
+        if (query?.bidder_type) {
+            snapshot = snapshot.where('bidder_type', '==', query?.bidder_type); //eg: manual, auto
         }
         if (query?.bidder_id) {
             const bidderId = isNaN(query.bidder_id)
