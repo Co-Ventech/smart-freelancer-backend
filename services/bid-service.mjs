@@ -12,7 +12,7 @@ export const saveBidService = async (body) => {
         await bidCollection.doc(generatedUUID)
             .set({
                 ...body,
-                ...scoredJobs
+                scores: scoredJobs.scores
             });
 
         const data = (await bidCollection.doc(generatedUUID).get()).data();
