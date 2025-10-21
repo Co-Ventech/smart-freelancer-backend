@@ -1,15 +1,18 @@
 import db from "../config/firebase-config.mjs"
 import { v4 } from 'uuid'
+import { scoreJob } from "../freelancer/freelancer_kpi_scorer.mjs";
 
 const bidCollection = db.collection('bids')
 
-export const saveBidService = async(body) => {
+export const saveBidService = async (body) => {
 
     try {
-        const generatedUUID= v4();
+        const scoredJobs = scoreJob(...body);
+        const generatedUUID = v4();
         await bidCollection.doc(generatedUUID)
             .set({
-                ...body
+                ...body,
+                ...scoredJobs
             });
 
         const data = (await bidCollection.doc(generatedUUID).get()).data();
@@ -18,6 +21,8 @@ export const saveBidService = async(body) => {
             message: "Bid Saved Successfully",
             data: data
         }
+
+
     } catch (e) {
         console.log(e)
         return {
@@ -54,7 +59,7 @@ export const getSavedBidsService = async (query) => {
         const data = []
         querySnapshot.forEach((doc) => {
             console.log(doc.id, " => ", doc.data());
-            data.push(doc.data());
+            data.push({ ...doc.data(), document_id: doc.id });
         });
 
         return {
