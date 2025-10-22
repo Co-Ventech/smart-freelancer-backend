@@ -54,6 +54,9 @@ export const getSavedBidsService = async (query) => {
 
             snapshot = snapshot.where('bidder_id', '==', bidderId); //bidded from zameer, zubair, co-ventech, ahsan's bidder id
         }
+        if (query?.type) {
+            snapshot = snapshot.where('type', '==', query?.type);
+        }
 
         const querySnapshot = await snapshot.get();
         const data = []
