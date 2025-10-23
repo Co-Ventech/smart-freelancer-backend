@@ -1,9 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
 import { generateProposal } from "./openai/proposalGenerator.mjs";
-import { getSavedBidController, saveBidHistoryController } from "./controller/bid-controller.mjs";
-import { applyKpisToSavedBids } from "./controller/freelancer-kpi-controller.mjs";
+import { getSavedBidController, saveBidHistoryController } from "./src/controller/bid-controller.mjs";
+import { applyKpisToSavedBids } from "./src/controller/freelancer-kpi-controller.mjs";
 import cors from "cors";
+import { createSubUser, getSubUsers } from "./src/controller/sub-user-controller.mjs";
 
 dotenv.config();
 
@@ -37,6 +38,12 @@ app.post("/generate-proposal", async (req, res) => {
 app.post('/save-bid-history', saveBidHistoryController);
 app.get('/bids', getSavedBidController)
 app.get("/kpis/score-saved-bids", applyKpisToSavedBids);
+app.post('/create-sub-user', createSubUser);
+app.get('/get-sub-users', getSubUsers);
+
+// Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
+// const schedule = '*/1 * * * *';
+// const task= nodeCron.schedule(schedule, )
 
 
 

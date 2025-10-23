@@ -1,4 +1,4 @@
-import db from "../config/firebase-config.mjs"
+import db from "../../config/firebase-config.mjs"
 import { v4 } from 'uuid'
 import { scoreJob } from "../freelancer/freelancer_kpi_scorer.mjs";
 

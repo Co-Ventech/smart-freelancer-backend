@@ -9,6 +9,14 @@ export const saveBidHistoryController = async (req, res) => {
     })
 }
 
+export const toggleAutoBidController= (req,res)=>{
+    
+}
+
+export const createAutoBid= async()=>{
+
+}
+
 export const getSavedBidController = async (req, res) => {
     const result = await getSavedBidsService(req?.query);
     return res.status(result.status).send({ ...result })

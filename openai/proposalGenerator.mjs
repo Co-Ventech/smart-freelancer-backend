@@ -9,7 +9,7 @@ const openai_client = new OpenAI({
 });
 
 // === Load the email template ===
-const templatePath = path.resolve("templates/email_templates.json");
+const templatePath = path.resolve("src/templates/email_templates.json");
 let universalTemplate = "";
 
 try {
