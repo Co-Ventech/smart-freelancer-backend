@@ -1,23 +1,25 @@
-import { getSavedBidsService, saveBidService } from "../services/bid-service.mjs"
+import { getSavedBidsService, saveBidService, toggleAutoBidService } from "../services/bid-service.mjs"
 
 export const saveBidHistoryController = async (req, res) => {
     const result = await saveBidService(req.body);
-    return res.status(result.status).send({
+    res.status(result.status).send({
         status: result.status,
         message: result.message,
         data: result.data
     })
 }
 
-export const toggleAutoBidController= (req,res)=>{
-    
+export const toggleAutoBidController = async (req, res) => {
+    const { user_bidder_id } = req?.query;
+    const result = await toggleAutoBidService({ bidder_id: user_bidder_id });
+    res.status(result.status).send({ ...result })
 }
 
-export const createAutoBid= async()=>{
+export const createAutoBid = async () => {
 
 }
 
 export const getSavedBidController = async (req, res) => {
     const result = await getSavedBidsService(req?.query);
-    return res.status(result.status).send({ ...result })
+    res.status(result.status).send({ ...result })
 }

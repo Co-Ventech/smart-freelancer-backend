@@ -2,7 +2,9 @@ import db from "../../config/firebase-config.mjs"
 import { v4 } from 'uuid'
 import { scoreJob } from "../freelancer/freelancer_kpi_scorer.mjs";
 
-const bidCollection = db.collection('bids')
+const bidCollection = db.collection('bids');
+const subUserCollection = db.collection('sub-user');
+
 
 export const saveBidService = async (body) => {
 
@@ -76,5 +78,28 @@ export const getSavedBidsService = async (query) => {
             status: 500,
             message: e.message
         }
+    }
+}
+
+export const toggleAutoBidService = async ({ bidder_id }) => {
+    const snapshot = await subUserCollection.where("user_bid_id", "==", parseInt(bidder_id)).get();
+    if (!snapshot.empty) {
+        const updatePromises = snapshot.docs.map((doc) => {
+            const current = doc.data().autobid_enabled;
+            return doc.ref.update({ autobid_enabled: !current });
+        });
+
+        // Wait for all updates
+        await Promise.all(updatePromises);
+
+        return {
+            status: 200,
+            message: "Auto Bid Toggled!!",
+            data: snapshot
+        }
+    }
+    return {
+        status: 404,
+        message: "User Not found!",
     }
 }
