@@ -1,15 +1,18 @@
 import db from "../config/firebase-config.mjs"
 import { v4 } from 'uuid'
+import { scoreJob } from "../freelancer/freelancer_kpi_scorer.mjs";
 
 const bidCollection = db.collection('bids')
 
-export const saveBidService = async(body) => {
+export const saveBidService = async (body) => {
 
     try {
-        const generatedUUID= v4();
+        const scoredJobs = scoreJob(body);
+        const generatedUUID = v4();
         await bidCollection.doc(generatedUUID)
             .set({
-                ...body
+                scores: scoredJobs.scores,
+                ...body,
             });
 
         const data = (await bidCollection.doc(generatedUUID).get()).data();
@@ -18,6 +21,8 @@ export const saveBidService = async(body) => {
             message: "Bid Saved Successfully",
             data: data
         }
+
+
     } catch (e) {
         console.log(e)
         return {
@@ -39,8 +44,8 @@ export const getSavedBidsService = async (query) => {
                 data: data
             }
         }
-        if (query?.bid_type) {
-            snapshot = snapshot.where('bid_type', '==', query?.bid_type); //eg: manual, auto
+        if (query?.bidder_type) {
+            snapshot = snapshot.where('bidder_type', '==', query?.bidder_type); //eg: manual, auto
         }
         if (query?.bidder_id) {
             const bidderId = isNaN(query.bidder_id)
@@ -49,12 +54,15 @@ export const getSavedBidsService = async (query) => {
 
             snapshot = snapshot.where('bidder_id', '==', bidderId); //bidded from zameer, zubair, co-ventech, ahsan's bidder id
         }
+        if (query?.type) {
+            snapshot = snapshot.where('type', '==', query?.type);
+        }
 
         const querySnapshot = await snapshot.get();
         const data = []
         querySnapshot.forEach((doc) => {
             console.log(doc.id, " => ", doc.data());
-            data.push(doc.data());
+            data.push({ ...doc.data(), document_id: doc.id });
         });
 
         return {

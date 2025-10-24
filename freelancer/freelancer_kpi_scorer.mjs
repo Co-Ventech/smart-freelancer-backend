@@ -63,7 +63,7 @@ const scoreBudgetRange = (budget = {}, type = "fixed") => {
 
   return parseFloat(score.toFixed(1));
 };
-
+            
 const scoreDescriptionQuality = (description) => {
   if (!description) return 0.2;
 
