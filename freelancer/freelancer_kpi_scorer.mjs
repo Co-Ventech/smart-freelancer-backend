@@ -11,16 +11,57 @@ const safeGet = (obj, path, fallback = null) => {
 };
 
 // === KPI Scoring Functions ===
-const scoreBidCount = (bidCount) => Math.max(0.1, 1 - (bidCount || 0) / 100);
 
-const scoreBudgetRange = (budget) => {
-  const min = budget?.minimum || 0;
-  const max = budget?.maximum || 0;
+// 1️⃣ Bid Count KPI (Tier-based)
+const scoreBidCount = (bidCount = 0) => {
+  if (bidCount < 5) return 1.0;
+  if (bidCount < 10) return 0.9;
+  if (bidCount < 15) return 0.8;
+  if (bidCount < 20) return 0.7;
+  if (bidCount < 25) return 0.6;
+  if (bidCount < 30) return 0.5;
+  if (bidCount < 35) return 0.4;
+  if (bidCount < 40) return 0.3;
+  if (bidCount < 45) return 0.2;
+  if (bidCount < 50) return 0.1;
+  return 0.0; // Above 50 bids
+};
+
+
+// 2️⃣ Budget Range KPI (Separate for Hourly vs Fixed)
+const scoreBudgetRange = (budget = {}, type = "fixed") => {
+  const min = budget.minimum || 0;
+  const max = budget.maximum || 0;
   if (min === 0 && max === 0) return 0.1;
+
   const avg = (min + max) / 2;
-  let score = Math.min(1.0, avg / 1000);
+  let score = 0.1; // default floor
+
+  if (type === "hourly") {
+    if (avg >= 100) score = 1.0;
+    else if (avg >= 75) score = 0.9;
+    else if (avg >= 50) score = 0.8;
+    else if (avg >= 30) score = 0.7;
+    else if (avg >= 20) score = 0.6;
+    else if (avg >= 10) score = 0.5;
+    else if (avg >= 5) score = 0.4;
+    else score = 0.3;
+  } else { // fixed project
+    if (avg >= 5000) score = 1.0;
+    else if (avg >= 3000) score = 0.9;
+    else if (avg >= 2000) score = 0.8;
+    else if (avg >= 1000) score = 0.7;
+    else if (avg >= 500) score = 0.6;
+    else if (avg >= 250) score = 0.5;
+    else if (avg >= 100) score = 0.4;
+    else if (avg >= 50) score = 0.3;
+    else score = 0.2;
+  }
+
+  // Apply small penalty if range is too wide
   if (max - min > 1000) score *= 0.9;
-  return score;
+
+  return parseFloat(score.toFixed(1));
 };
 
 const scoreDescriptionQuality = (description) => {
