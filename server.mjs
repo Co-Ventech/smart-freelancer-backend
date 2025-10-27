@@ -23,13 +23,19 @@ app.post("/generate-proposal", async (req, res) => {
 
   console.log(`🟢 Generating proposal for: ${title}`);
 
-  const proposalText = await generateProposal(title, description, name);
+  const result = await generateProposal(title, description, name);
 
-  res.json({
-    id: id || null,
-    title,
-    description,
-    proposal: proposalText,
+  if (result.status === 200) {
+    res.status(result?.status).json({
+      id: id || null,
+      title,
+      description,
+      proposal: result.data,
+      message: result?.message
+    });
+  }
+  res.status(result?.status).json({
+    message: result?.message
   });
 });
 

@@ -76,10 +76,17 @@ Follow these exact rules:
             max_tokens: 600,
         });
 
-        return response.choices[0].message.content.trim();
+        return {
+            status: 200,
+            message: "Proposal Generated Successfully",
+            data: response.choices[0].message.content.trim()
+        };
     } catch (error) {
         console.error("❌ Error generating proposal:", error);
-        return "Error generating proposal.";
+        return {
+            status: 500,
+            message: "Error in Generating Proposal: "+ error?.message,
+        };
     }
 }
 
