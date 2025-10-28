@@ -107,7 +107,7 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
     }
 }
 
-export const audioBidService = async ({ projectsToBid, bidderId, token, bidderName, uid }) => {
+export const audioBidService = async ({ projectsToBid, bidderId, token, bidderName }) => {
     for (const project of projectsToBid) {
         try {
             const bidAmount = calculateBidAmount(project);
@@ -137,7 +137,7 @@ export const audioBidService = async ({ projectsToBid, bidderId, token, bidderNa
                proposal: proposalResponse,
                projectTitle: project?.title,
                projectId: project?.id,
-               bidderName
+               bidderName,
             })
             if (bidResponse.status === 200) {
                 console.log(`Bid placed successfully for project ${project.id}`);
@@ -148,16 +148,17 @@ export const audioBidService = async ({ projectsToBid, bidderId, token, bidderNa
                 // Save bid history
                 await saveBidService({
                     bidderType: "auto",
-                    bidderId: bidderId,
+                    bidder_id: bidderId,
                     description: proposalResponse,
                     projectTitle: project.title,
                     url: project.seo_url,
                     projectType: project.type,
-                    projectId: project.id,
+                    project_id: project.id,
                     projectDescription: project.description,
                     budget: project?.budget,
                     amount: bidAmount,
                     period: 5,
+                    bidderType: "auto",
                 });
             }
         } catch (err) {
