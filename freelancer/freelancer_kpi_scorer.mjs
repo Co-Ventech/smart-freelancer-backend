@@ -90,6 +90,15 @@ const scoreUrgency = (urgent) => (urgent ? 1.0 : 0.7);
 const scoreFeatured = (featured) => (featured ? 1.0 : 0.7);
 const scoreEnterprise = (enterprise) => (enterprise ? 1.0 : 0.7);
 
+const scorePaymentVerified = (isVerified) => (isVerified ? 1.0 : 0.0);
+
+const scoreEmployerReputation = (rating) => {
+  if (rating == null) return 0.3;
+  if (rating >= 4.5) return 1.0;
+  if (rating >= 4.0 && rating < 4.5) return 0.7;
+  return 0.5;
+};
+
 // === Main Scoring Function ===
 export const scoreJob = (job) => {
   const bidCount = safeGet(job, "bid_stats.bid_count", 0);
@@ -101,6 +110,9 @@ export const scoreJob = (job) => {
   const urgent = safeGet(job, "upgrades.urgent", false);
   const featured = safeGet(job, "upgrades.featured", false);
   const enterprise = safeGet(job, "upgrades.enterprise", false);
+  const paymentVerified = safeGet(job, "user.status.payment_verified", false);
+  const employerRating = safeGet(job, "user.employer_reputation.entire_history.overall", null);
+
 
   const scores = {
     bid_count_kpi: scoreBidCount(bidCount),
@@ -111,6 +123,8 @@ export const scoreJob = (job) => {
     project_urgency_kpi: scoreUrgency(urgent),
     featured_project_kpi: scoreFeatured(featured),
     enterprise_project_kpi: scoreEnterprise(enterprise),
+    client_payment_verified_kpi: scorePaymentVerified(paymentVerified),
+    employer_reputation_kpi: scoreEmployerReputation(employerRating),
   };
 
   const finalScore =
