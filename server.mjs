@@ -5,6 +5,8 @@ import { getSavedBidController, saveBidHistoryController, toggleAutoBidControlle
 import { applyKpisToSavedBids } from "./src/controller/freelancer-kpi-controller.mjs";
 import cors from "cors";
 import { createSubUser, getSubUsers } from "./src/controller/sub-user-controller.mjs";
+import nodeCron from "node-cron";
+import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
 
 dotenv.config();
 
@@ -43,8 +45,8 @@ app.get('/get-sub-users', getSubUsers);
 app.post('/toggle-auto-bid', toggleAutoBidController)
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
-// const schedule = '*/1 * * * *';
-// const task= nodeCron.schedule(schedule, )
+const schedule = '*/1 * * * *';
+nodeCron.schedule(schedule, scheduleAutoBidController)
 
 
 

@@ -2,6 +2,7 @@ import db from "../../config/firebase-config.mjs"
 import { v4 } from "uuid";
 import { fetchUserBidId } from "./freelancer-service.mjs";
 import { decrypt, encrypt } from "../utils/crypto.mjs";
+import axios from "axios";
 
 const subUserCollection = db.collection('sub-user')
 
@@ -27,7 +28,7 @@ export const createSubUserService = async ({ uid, sub_user_access_token, sub_use
 }
 
 export const getSubUsersService = async ({ uid }) => {
-    const snapshot= subUserCollection.where("uid", "==", uid);
+    const snapshot = subUserCollection.where("uid", "==", uid);
 
     const querySnapshot = await snapshot.get();
     const data = []
@@ -44,4 +45,17 @@ export const getSubUsersService = async ({ uid }) => {
 
 }
 
+export const getAutoBidSubUsersService = async () => {
+    const snapshot = subUserCollection.where("autobid_enabled", "==", true);
+    const querySnapshot = await snapshot.get();
+    const data = []
+    querySnapshot?.forEach((doc) => {
+        data.push({ ...doc.data(), document_id: doc.id, sub_user_access_token: decrypt(doc.data()["sub_user_access_token"]) });
+    });
 
+    return {
+        status: 200,
+        message: "Sub Users fetched successfully",
+        data: data
+    }
+}
