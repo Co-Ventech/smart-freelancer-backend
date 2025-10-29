@@ -7,6 +7,7 @@ import cors from "cors";
 import { createSubUser, getSubUsers } from "./src/controller/sub-user-controller.mjs";
 import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
+import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
 
 dotenv.config();
 
@@ -39,10 +40,12 @@ app.post("/generate-proposal", async (req, res) => {
 
 app.post('/save-bid-history', saveBidHistoryController);
 app.get('/bids', getSavedBidController)
-app.get("/kpis/score-saved-bids", applyKpisToSavedBids);
-app.post('/create-sub-user', createSubUser);
-app.get('/get-sub-users', getSubUsers);
-app.post('/toggle-auto-bid', toggleAutoBidController)
+app.post('/sub-users', createSubUser);
+app.get('/sub-users', getSubUsers);
+app.post('/toggle-auto-bid', toggleAutoBidController);
+app.get('/notifications', getAllNotificationsController);
+app.post('/notifications/mark-read', markNotificationReadController)
+
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
 const schedule = '*/1 * * * *';

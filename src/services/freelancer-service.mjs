@@ -3,8 +3,12 @@ import { getUnixTimestamp } from "../utils/date-utils.mjs";
 import { buildQueryParams } from "../utils/build-query-params.mjs";
 import { filterProjects } from "../utils/filter-projects.mjs";
 
+const api= axios.create({
+    baseURL: "https://www.freelancer.com",
+});
+
 export const fetchUserBidId = async (sub_user_access_token) => {
-    const response = await axios.get('https://www.freelancer.com/api/users/0.1/self', {
+    const response = await api.get('/api/users/0.1/self', {
         headers: {
             'Authorization': `Bearer ${sub_user_access_token}`,
         },
@@ -28,8 +32,8 @@ export const fetchProjectsOfUserService = async (skillIds) => {
             user_status: true,
         };
         const queryString = buildQueryParams(params);
-        const url = `https://www.freelancer.com/api/projects/0.1/projects/active?${queryString}`;
-        const response = await axios.get(url, {
+        const url = `/api/projects/0.1/projects/active?${queryString}`;
+        const response = await api.get(url, {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
                 "Accept": "application/json",
@@ -48,16 +52,16 @@ export const fetchProjectsOfUserService = async (skillIds) => {
 }
 
 export const fetchUserSkillsService = async (userId) => {
-    const response = await axios.get(
-        `https://www.freelancer.com/ajax-api/skills/top-skills.php?limit=9999&userId=${userId}&compact=true`
+    const response = await api.get(
+        `/ajax-api/skills/top-skills.php?limit=9999&userId=${userId}&compact=true`
     );
     const skills = response.data?.result?.topSkills?.map((skill) => skill.id) || [];
     return (skills)
 }
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle}) => {
-    const bidResponse = await axios.post(
-        `https://www.freelancer.com/api/projects/0.1/bids/`,
+    const bidResponse = await api.post(
+        `/api/projects/0.1/bids/`,
         {
             project_id: projectId,
             bidder_id: bidderId,

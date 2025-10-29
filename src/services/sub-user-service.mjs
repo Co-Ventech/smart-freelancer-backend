@@ -2,7 +2,7 @@ import db from "../../config/firebase-config.mjs"
 import { v4 } from "uuid";
 import { fetchUserBidId } from "./freelancer-service.mjs";
 import { decrypt, encrypt } from "../utils/crypto.mjs";
-import axios from "axios";
+import admin from "firebase-admin";
 
 const subUserCollection = db.collection('sub-user')
 
@@ -18,7 +18,7 @@ export const createSubUserService = async ({ uid, sub_user_access_token, sub_use
             sub_username,
             autobid_enabled,
             user_bid_id: userBidId,
-            notifications: []
+            created_at: admin.firestore.FieldValue.serverTimestamp(),
         });
 
     return {
