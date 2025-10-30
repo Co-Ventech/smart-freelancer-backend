@@ -16,7 +16,7 @@ export const fetchUserBidId = async (sub_user_access_token) => {
     return response.data?.result?.id || null;
 }
 
-export const fetchProjectsOfUserService = async (skillIds) => {
+export const fetchProjectsOfUserService = async (skillIds, sub_user_access_token) => {
     const from_time = getUnixTimestamp(300);
     try {
         const params = {
@@ -37,6 +37,7 @@ export const fetchProjectsOfUserService = async (skillIds) => {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
                 "Accept": "application/json",
+                'Authorization': `Bearer ${sub_user_access_token}`,
             },
         });
 

@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { generateProposal } from "./src/openai/proposalGenerator.mjs";
+import { generateAIProposal } from "./src/openai/proposalGenerator.mjs";
 import { getSavedBidController, saveBidHistoryController, toggleAutoBidController } from "./src/controller/bid-controller.mjs";
 import { applyKpisToSavedBids } from "./src/controller/freelancer-kpi-controller.mjs";
 import cors from "cors";
@@ -27,7 +27,7 @@ app.post("/generate-proposal", async (req, res) => {
 
   console.log(`🟢 Generating proposal for: ${title}`);
 
-  const result = await generateProposal(title, description, name);
+  const result = await generateAIProposal(title, description, name);
 
   if (result.status === 200) {
     res.status(result?.status).json({
@@ -54,6 +54,7 @@ app.post('/notifications/mark-read', markNotificationReadController)
 
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
+// auto-bid
 const schedule = '*/1 * * * *';
 nodeCron.schedule(schedule, scheduleAutoBidController)
 

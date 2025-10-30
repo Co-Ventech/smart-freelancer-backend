@@ -22,13 +22,14 @@ export const getAllNotificationService = async ({ subUserId, onlyUnread = false 
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-export const createNotificationService = async ({ subUserId, notificationTitle, notificationDescription, projectId }) => {
+export const createNotificationService = async ({ isSuccess, subUserId, notificationTitle, notificationDescription, projectId }) => {
     try {
         const generatedUUID = v4();
         const notifRef = subUserCollection.doc(subUserId).collection("notifications")
             .doc(generatedUUID);
 
         await notifRef.set({
+            isSuccess,
             title: notificationTitle,
             description: notificationDescription,
             project_id: projectId,

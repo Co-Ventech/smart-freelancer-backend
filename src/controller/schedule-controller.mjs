@@ -10,13 +10,18 @@ export const scheduleAutoBidController = async () => {
         await Promise.allSettled(autoBidEnabledUsers?.data?.map(async (user) => {
             console.log(user)
             const skills = await fetchUserSkillsService(user?.user_bid_id);
-            const projects = await fetchProjectsOfUserService(skills);
+            const projects = await fetchProjectsOfUserService(skills, user?.sub_user_access_token);
             console.log(projects.projects)
             const autoBidResponse = await audioBidService({
+                sub_user_doc_id: user?.document_id,
+                general_proposal: user?.general_proposal,
+                autobid_enabled_for_job_type: user?.autobid_enabled_for_job_type,
+                autobid_proposal_type: user?.autobid_proposal_type,
                 projectsToBid: projects.projects,
                 bidderId: user?.user_bid_id,
                 bidderName: user?.sub_username,
-                token: user?.sub_user_access_token
+                token: user?.sub_user_access_token,
+                autobid_type: user?.autobid_enabled_for_job_type
             });
             console.log(autoBidResponse);
         }))

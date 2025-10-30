@@ -22,22 +22,25 @@ export const calculateBidAmount = (project) => {
         }
     }
     else if (type === 'fixed') {
-        // Fixed-Price Projects
-        if (minBudget >= 30 && maxBudget >= 200) {
-            console.log(`Project ${project.id} is fixed-price with budget between $30 and $250. Bidding minimum: ${minBudget}`);
-            return minBudget; // Bid the minimum amount for budgets between $30 to >200
-        } else if (minBudget >= 250 && maxBudget <= 900) {
-            console.log(`Project ${project.id} is fixed-price with budget between $250 and $900. Bidding minimum: ${minBudget}`);
-            return minBudget; // Bid the minimum amount for budgets between $250 and $900
-        } else if (maxBudget > 1000) {
-            console.log(`Project ${project.id} is fixed-price with budget > $1,000. Bidding minimum: ${minBudget}`);
-            return minBudget; // Bid the minimum amount for budgets > $1,000
-        } else {
-            console.log(`Project ${project.id} is fixed-price with budget < $200. Skipping.`);
-            return null; // Skip projects with budgets < $200
+
+        if (minBudget >= 30) {
+            return minBudget;
         }
+        // Fixed-Price Projects
+        // if (minBudget >= 30 && maxBudget >= 200) {
+        //     console.log(`Project ${project.id} is fixed-price with budget between $30 and $250. Bidding minimum: ${minBudget}`);
+        //     return minBudget; // Bid the minimum amount for budgets between $30 to >200
+        // } else if (minBudget >= 250 && maxBudget <= 900) {
+        //     console.log(`Project ${project.id} is fixed-price with budget between $250 and $900. Bidding minimum: ${minBudget}`);
+        //     return minBudget; // Bid the minimum amount for budgets between $250 and $900
+        // } else if (maxBudget > 1000) {
+        //     console.log(`Project ${project.id} is fixed-price with budget > $1,000. Bidding minimum: ${minBudget}`);
+        //     return minBudget; // Bid the minimum amount for budgets > $1,000
+        // } else {
+        //     console.log(`Project ${project.id} is fixed-price with budget < $200. Skipping.`);
+        //     return null; // Skip projects with budgets < $200
+        // }
+        return null;
     }
 
-    console.log(`Project ${project.id} does not meet any criteria. Skipping.`);
-    return null; // Skip projects that do not meet any criteria
 };

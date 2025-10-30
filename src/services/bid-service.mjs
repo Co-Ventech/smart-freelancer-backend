@@ -1,9 +1,12 @@
 import db from "../../config/firebase-config.mjs"
 import { v4 } from 'uuid'
 import { scoreJob } from "../freelancer/freelancer_kpi_scorer.mjs";
-import { generateProposal } from "../openai/proposalGenerator.mjs";
+import { generateAIProposal } from "../openai/proposalGenerator.mjs";
 import { placeBid } from "./freelancer-service.mjs";
 import { calculateBidAmount } from "../utils/calculate-bid-amount.mjs";
+import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
+import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
+import { createNotificationService } from "./notification-service.mjs";
 
 const bidCollection = db.collection('bids');
 const subUserCollection = db.collection('sub-user');
@@ -107,72 +110,88 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
     }
 }
 
-export const audioBidService = async ({ projectsToBid, bidderId, token, bidderName }) => {
+
+
+export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
     for (const project of projectsToBid) {
-        try {
-            const bidAmount = calculateBidAmount(project);
-            // Skip projects that do not meet the criteria
-            if (bidAmount === null) {
-                return {
-                    status: 200,
-                    message: `Skipping project ${project.id} due to bid criteria.`
+        if (autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || (project.type === autobid_type)) {
+            try {
+                const bidAmount = calculateBidAmount(project);
+                // Skip projects that do not meet the criteria
+                if (bidAmount === null) {
+                    return {
+                        status: 200,
+                        message: `Skipping project ${project.id} due to bid criteria.`
+                    }
                 }
-            }
 
-            const proposalResponse = await generateProposal(project?.title, project?.description, bidderName);
-            if (proposalResponse === "Error generating proposal.") {
-                return {
-                    status: 500,
-                    message: proposalResponse
+                const proposalResponse = autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED ?
+                    await generateAIProposal(project?.title, project?.description, bidderName) : general_proposal;
+                if (proposalResponse === "Error generating proposal.") {
+                    return {
+                        status: 500,
+                        message: proposalResponse
+                    }
                 }
+
+                console.log(`Proposal generated for project ${project.id}:`, proposalResponse);
+                console.log(`Placing bid for project ${project.id} with amount ${bidAmount}...`);
+
+                const retryCount= 0;
+
+                while(retryCount<=4){
+
+                    const bidResponse = await placeBid({
+                        bidderAccessToken: token,
+                        bidAmount,
+                        bidderId,
+                        proposal: proposalResponse,
+                        projectTitle: project?.title,
+                        projectId: project?.id,
+                        bidderName,
+                    })
+                    if (bidResponse.status === 200) {
+                        console.log(`Bid placed successfully for project ${project.id}`);
+    
+                        // Save bid history
+                        await saveBidService({
+                            bidderType: "auto",
+                            bidder_id: bidderId,
+                            description: proposalResponse,
+                            projectTitle: project.title,
+                            url: project.seo_url,
+                            projectType: project.type,
+                            project_id: project.id,
+                            projectDescription: project.description,
+                            budget: project?.budget,
+                            amount: bidAmount,
+                            period: 5,
+                            bidderType: "auto",
+                        });
+    
+                        await createNotificationService({
+                            isSuccess: true,
+                            subUserId: sub_user_doc_id,
+                            projectId: project.id,
+                            notificationTitle: `Auto Bid Done from ${bidderName}`,
+                            notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bidded from ${bidderName}`
+                        });
+                        break;
+                    } else {
+                        retryCount++;
+                        await createNotificationService({
+                            isSuccess: false,
+                            subUserId: sub_user_doc_id,
+                            projectId: project.id,
+                            notificationTitle: `Auto Bid Failed from ${bidderName}`,
+                            notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bid Failed due to ${bidResponse?.message}`
+                        })
+                    }
+                }
+            } catch (err) {
+                // const errorMessage = handleApiError(err);
+                console.error(`Error processing project ${project.id}:`, err);
             }
-
-            console.log(`Proposal generated for project ${project.id}:`, proposalResponse);
-            console.log(`Placing bid for project ${project.id} with amount ${bidAmount}...`);
-
-            const bidResponse= await placeBid({
-               bidderAccessToken: token,
-               bidAmount,
-               bidderId,
-               proposal: proposalResponse,
-               projectTitle: project?.title,
-               projectId: project?.id,
-               bidderName,
-            })
-            if (bidResponse.status === 200) {
-                console.log(`Bid placed successfully for project ${project.id}`);
-                // showSuccess(`AutoBid: Bid placed for #${project.id}`);
-                // const titleText = (project?.title || '').trim();
-                // const pretty = titleText ? `#${project.id} — ${titleText}` : `#${project.id}`;
-
-                // Save bid history
-                await saveBidService({
-                    bidderType: "auto",
-                    bidder_id: bidderId,
-                    description: proposalResponse,
-                    projectTitle: project.title,
-                    url: project.seo_url,
-                    projectType: project.type,
-                    project_id: project.id,
-                    projectDescription: project.description,
-                    budget: project?.budget,
-                    amount: bidAmount,
-                    period: 5,
-                    bidderType: "auto",
-                });
-            }
-        } catch (err) {
-            // const errorMessage = handleApiError(err);
-            console.error(`Error processing project ${project.id}:`, err);
         }
     }
-
-    // setCooldown(true);
-    // setTimeout(() => {
-    //     setCooldown(false);
-    //     console.log('Cooldown ended. Auto-bid is now active.');
-    // }, 5 * 60 * 1000); // 2-minute cooldown
-    // showSuccess('AutoBid completed successfully');
-    // notifySuccess('AutoBid completed', 'Auto-bidding run completed successfully');
-
 }
