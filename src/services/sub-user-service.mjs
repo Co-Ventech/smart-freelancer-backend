@@ -31,7 +31,7 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
 }
 
 export const getSubUsersService = async ({ uid }) => {
-    const snapshot = subUserCollection.where("uid", "==", uid);
+    const snapshot = subUserCollection.where("parent_uid", "==", uid);
 
     const querySnapshot = await snapshot.get();
     const data = []

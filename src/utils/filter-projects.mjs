@@ -13,8 +13,13 @@ export const filterProjects = (resProjects, resUsers) => {
             console.log(`Hiding project ${project.id} from UI - owner country: ${ownerCountry}`);
             return false;
         }
-        const ownerId = project.owner_id || project.owner?.id || project.user_id || null;
-        console.log("owner id: ",ownerId)
+        const ownerId = project.owner_id || project.owner?.id || project.user_id || null;        
+        const isPaymentVerified= resUsers[String(ownerId)]?.status?.payment_verified === true
+
+        if(!isPaymentVerified){
+            console.log("Payment Method is not verified for owner id: ", ownerId)
+            return false;
+        }
 
         //filter projects other than english language
         if (/^[^\u0000-\u007F]/.test(title)) {
