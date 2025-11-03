@@ -2,12 +2,12 @@ import express from "express";
 import dotenv from "dotenv";
 import { generateAIProposal } from "./src/openai/proposalGenerator.mjs";
 import { getSavedBidController, saveBidHistoryController, toggleAutoBidController } from "./src/controller/bid-controller.mjs";
-import { applyKpisToSavedBids } from "./src/controller/freelancer-kpi-controller.mjs";
 import cors from "cors";
-import { createSubUser, getSubUsers } from "./src/controller/sub-user-controller.mjs";
+import { createSubUser, getSubUsers, updateSubUserController } from "./src/controller/sub-user-controller.mjs";
 import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
 import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
+import { validateUser } from "./src/validator/auth-validator.mjs";
 
 dotenv.config();
 
@@ -44,13 +44,15 @@ app.post("/generate-proposal", async (req, res) => {
 });
 
 
-app.post('/save-bid-history', saveBidHistoryController);
-app.get('/bids', getSavedBidController)
-app.post('/sub-users', createSubUser);
-app.get('/sub-users', getSubUsers);
-app.post('/toggle-auto-bid', toggleAutoBidController);
-app.get('/notifications', getAllNotificationsController);
-app.post('/notifications/mark-read', markNotificationReadController)
+app.post('/save-bid-history', validateUser, saveBidHistoryController);
+app.get('/bids', validateUser, getSavedBidController)
+app.post('/sub-users', validateUser, createSubUser);
+app.get('/sub-users', validateUser, getSubUsers);
+app.patch('/sub-users', validateUser, updateSubUserController);
+app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
+app.get('/notifications', validateUser, getAllNotificationsController);
+app.post('/notifications/mark-read', validateUser, markNotificationReadController);
+// app.post('/login', loginController);
 
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')

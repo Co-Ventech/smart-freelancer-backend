@@ -1,4 +1,5 @@
 import admin from 'firebase-admin';
+import * as firebaseAuth from 'firebase/auth'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -17,6 +18,7 @@ if (!admin.apps.length) {
   });
 }
 
+export const adminAuth = admin.auth(); // ✅ for verifying tokens
 const db = admin.firestore();
 
 export default db;

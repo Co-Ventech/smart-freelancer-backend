@@ -8,7 +8,7 @@ import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
 
 const subUserCollection = db.collection('sub-user')
 
-export const createSubUserService = async ({ parent_uid, sub_user_access_token, sub_username, autobid_enabled = false, general_proposal= AUTOBID_PROPOSAL_TYPE.GENERAL, autobid_enabled_for_job_type = AUTOBID_FOR_JOB_TYPE.ALL }) => {
+export const createSubUserService = async ({ parent_uid, sub_user_access_token, sub_username, autobid_enabled = false, general_proposal = AUTOBID_PROPOSAL_TYPE.GENERAL, autobid_enabled_for_job_type = AUTOBID_FOR_JOB_TYPE.ALL }) => {
     const generatedUUID = v4();
     const hashedToken = encrypt(sub_user_access_token);
     const userBidId = await fetchUserBidId(sub_user_access_token);
@@ -60,5 +60,26 @@ export const getAutoBidSubUsersService = async () => {
         status: 200,
         message: "Sub Users fetched successfully",
         data: data
+    }
+}
+
+export const updateSubUserService = async (body) => {
+    try{
+        await subUserCollection
+            .doc(body?.sub_user_id)
+            .update({
+                ...body
+            });
+
+        return {
+            status: 200,
+            message:"Sub User Updated Successfully"
+        }
+    }catch(e){
+        console.log(e);
+        return {
+            status: 500,
+            message:"Error: "+ e.message
+        }
     }
 }
