@@ -52,6 +52,7 @@ app.patch('/sub-users', validateUser, updateSubUserController);
 app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 app.get('/notifications', validateUser, getAllNotificationsController);
 app.post('/notifications/mark-read', validateUser, markNotificationReadController);
+app.post('/create-access-token',validateUser,)
 // app.post('/login', loginController);
 
 

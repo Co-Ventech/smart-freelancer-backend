@@ -63,10 +63,11 @@ export const getAutoBidSubUsersService = async () => {
     }
 }
 
-export const updateSubUserService = async (body) => {
+export const updateSubUserService = async (sub_user_id,body) => {
     try{
+        console.log(body)
         await subUserCollection
-            .doc(body?.sub_user_id)
+            .doc(sub_user_id)
             .update({
                 ...body
             });
