@@ -1,6 +1,6 @@
 import db from "../../config/firebase-config.mjs"
 import { v4 } from 'uuid'
-import * as admin from 'firebase-admin'
+import { FieldValue } from "firebase-admin/firestore";
 
 const subUserCollection = db.collection('sub-user')
 
@@ -34,7 +34,7 @@ export const createNotificationService = async ({ isSuccess, subUserId, notifica
             description: notificationDescription,
             project_id: projectId,
             is_read: false,
-            created_at: admin.firestore.FieldValue.serverTimestamp(),
+            created_at: FieldValue.serverTimestamp(),
         });
 
         return {

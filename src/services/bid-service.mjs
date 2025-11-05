@@ -140,7 +140,6 @@ export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId
                 const retryCount= 0;
 
                 while(retryCount<=4){
-
                     const bidResponse = await placeBid({
                         bidderAccessToken: token,
                         bidAmount,
