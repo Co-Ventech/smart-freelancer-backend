@@ -21,7 +21,7 @@ if (!universalTemplate) {
 
 // === Function to generate proposal ===
 export async function generateAIProposal(title, description, name) {
-    const prompt = proposalPrompt(universalTemplate, title, description, name);
+    const prompt = proposalPrompt(title, description, name);
 
     try {
         const response = await openai_client.create({
