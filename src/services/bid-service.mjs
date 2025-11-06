@@ -136,8 +136,8 @@ export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId
                         proposal = proposalResponse?.data;
                     } else {
                         return {
-                            status: 500,
-                            message: proposalResponse
+                            status: proposalResponse?.status,
+                            message: proposalResponse?.message
                         }
                     }
                 }
@@ -164,7 +164,7 @@ export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId
                         await saveBidService({
                             bidderType: "auto",
                             bidder_id: bidderId,
-                            description: proposalResponse,
+                            description: proposal,
                             projectTitle: project.title,
                             url: project.seo_url,
                             projectType: project.type,

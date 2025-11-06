@@ -8,6 +8,7 @@ import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
 import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
 import { validateUser } from "./src/validator/auth-validator.mjs";
+import { createAccessTokenController } from "./src/controller/token-controller.mjs";
 
 dotenv.config();
 
@@ -52,7 +53,7 @@ app.patch('/sub-users', validateUser, updateSubUserController);
 app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 app.get('/notifications', validateUser, getAllNotificationsController);
 app.post('/notifications/mark-read', validateUser, markNotificationReadController);
-app.post('/create-access-token',validateUser,)
+app.post('/access-token', validateUser, createAccessTokenController);
 // app.post('/login', loginController);
 
 
