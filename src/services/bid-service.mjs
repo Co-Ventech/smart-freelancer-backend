@@ -112,7 +112,7 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 
 
-export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
+export const autoBidService = async ({ sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
     for (const project of projectsToBid) {
         if (autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || (project.type === autobid_type)) {
             try {
@@ -162,18 +162,18 @@ export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId
 
                         // Save bid history
                         await saveBidService({
-                            bidderType: "auto",
+                            bidder_type: "auto",
                             bidder_id: bidderId,
                             description: proposal,
                             projectTitle: project.title,
                             url: project.seo_url,
-                            projectType: project.type,
+                            type: project.type,
                             project_id: project.id,
                             projectDescription: project.description,
                             budget: project?.budget,
                             amount: bidAmount,
                             period: 5,
-                            bidderType: "auto",
+                            date: Date.now()
                         });
 
                         await createNotificationService({

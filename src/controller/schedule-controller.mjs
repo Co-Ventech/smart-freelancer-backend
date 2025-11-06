@@ -1,4 +1,4 @@
-import { audioBidService } from "../services/bid-service.mjs";
+import { autoBidService } from "../services/bid-service.mjs";
 import { fetchProjectsOfUserService, fetchUserSkillsService } from "../services/freelancer-service.mjs";
 import { getAutoBidSubUsersService } from "../services/sub-user-service.mjs";
 
@@ -12,7 +12,7 @@ export const scheduleAutoBidController = async () => {
             const skills = await fetchUserSkillsService(user?.user_bid_id);
             const projects = await fetchProjectsOfUserService(skills, user?.sub_user_access_token);
             console.log(projects.projects)
-            const autoBidResponse = await audioBidService({
+            const autoBidResponse = await autoBidService({
                 sub_user_doc_id: user?.document_id,
                 general_proposal: user?.general_proposal,
                 autobid_enabled_for_job_type: user?.autobid_enabled_for_job_type,
