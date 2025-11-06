@@ -2,6 +2,8 @@ import { calculateBidAmount } from "./calculate-bid-amount.mjs";
 import { getOwnerCountry, isExcludedCountry } from "./get-owner-country.mjs";
 
 export const filterProjects = (resProjects, resUsers) => {
+    const MIN_EMPLOYER_RATING = 4; // default: 4 (4+)
+
     // Filter projects based on the conditions
     const projects = resProjects.filter((project) => {
         const { currency, budget, NDA, title } = project;
@@ -13,12 +15,22 @@ export const filterProjects = (resProjects, resUsers) => {
             console.log(`Hiding project ${project.id} from UI - owner country: ${ownerCountry}`);
             return false;
         }
-        const ownerId = project.owner_id || project.owner?.id || project.user_id || null;        
-        const isPaymentVerified= resUsers[String(ownerId)]?.status?.payment_verified === true
+        const ownerId = project.owner_id || project.owner?.id || project.user_id || null;
+        // const isPaymentVerified = resUsers[String(ownerId)]?.status?.payment_verified === true;
+        const clientRating = resUsers[String(ownerId)]?.employer_reputation?.entire_history?.overall;
 
-        if(!isPaymentVerified){
-            console.log("Payment Method is not verified for owner id: ", ownerId)
-            return false;
+        if (typeof clientRating === 'number' //|| isPaymentVerified
+            ) {
+            // optionally require integer rating (reject 4.5 etc) or accept decimals
+            const passesRating = Number.isInteger(clientRating) && clientRating >= MIN_EMPLOYER_RATING;
+
+            if (passesRating) {
+                console.log(`Auto-bid allowed for project ${project.id} (owner ${ownerId}) — rep ${clientRating}`);
+                return true;
+            } else {
+                console.log(`Owner for project ${project.id} failed rating requirement: ${clientRating}`);
+                return false;
+            }
         }
 
         //filter projects other than english language
@@ -66,7 +78,7 @@ export const filterProjects = (resProjects, resUsers) => {
             return false;
         }
 
-        if(calculateBidAmount(project)===null){
+        if (calculateBidAmount(project) === null) {
             return false;
         }
 
