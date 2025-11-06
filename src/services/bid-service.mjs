@@ -126,32 +126,40 @@ export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId
                 }
 
                 const proposalResponse = autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED ?
-                    await generateAIProposal(project?.title, project?.description, bidderName) : general_proposal;
-                if (proposalResponse === "Error generating proposal.") {
-                    return {
-                        status: 500,
-                        message: proposalResponse
+                    await generateAIProposal(project?.title, project?.description, bidderName) : null;
+                let proposal = null;
+
+                if (!proposalResponse) {
+                    proposal = general_proposal;
+                } else {
+                    if (proposalResponse?.status === 200) {
+                        proposal = proposalResponse?.data;
+                    } else {
+                        return {
+                            status: 500,
+                            message: proposalResponse
+                        }
                     }
                 }
 
-                console.log(`Proposal generated for project ${project.id}:`, proposalResponse);
+                console.log(`Proposal generated for project ${project.id}:`, proposal);
                 console.log(`Placing bid for project ${project.id} with amount ${bidAmount}...`);
 
-                const retryCount= 0;
+                const retryCount = 0;
 
-                while(retryCount<=4){
+                while (retryCount <= 4) {
                     const bidResponse = await placeBid({
                         bidderAccessToken: token,
                         bidAmount,
                         bidderId,
-                        proposal: proposalResponse,
+                        proposal,
                         projectTitle: project?.title,
                         projectId: project?.id,
                         bidderName,
                     })
                     if (bidResponse.status === 200) {
                         console.log(`Bid placed successfully for project ${project.id}`);
-    
+
                         // Save bid history
                         await saveBidService({
                             bidderType: "auto",
@@ -167,7 +175,7 @@ export const audioBidService = async ({ sub_user_doc_id, projectsToBid, bidderId
                             period: 5,
                             bidderType: "auto",
                         });
-    
+
                         await createNotificationService({
                             isSuccess: true,
                             subUserId: sub_user_doc_id,
