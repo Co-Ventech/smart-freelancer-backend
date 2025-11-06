@@ -16,10 +16,16 @@ export const markNotificationRead = async ({ subUserId, notificationId }) => {
 };
 
 export const getAllNotificationService = async ({ subUserId, onlyUnread = false }) => {
-    let query = subUserCollection.doc(subUserId).collection("notifications");
-    if (onlyUnread) query = query.where("is_read", "==", false);
-    const snapshot = await query.orderBy("created_at", "desc").get();
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    try{
+        let query = subUserCollection.doc(subUserId).collection("notifications");
+        if (onlyUnread) query = query.where("is_read", "==", false);
+        const snapshot = await query.orderBy("created_at", "desc").get();
+        console.log(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }catch(e){
+        console.log(e);
+        return e.message
+    }
 };
 
 export const createNotificationService = async ({ isSuccess, subUserId, notificationTitle, notificationDescription, projectId }) => {
