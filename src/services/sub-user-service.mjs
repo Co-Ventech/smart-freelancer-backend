@@ -35,10 +35,11 @@ export const getSubUsersService = async ({ uid }) => {
 
     const querySnapshot = await snapshot.get();
     const data = [];
-    let index=0;
+    let index = 0;
     querySnapshot.forEach((doc) => {
-        delete doc.data()["sub_user_access_token"];
-        data.push({ ...doc.data(), document_id: doc.id, sub_user: `sub_${index}` });
+        const docData = doc.data();
+        delete docData["sub_user_access_token"];
+        data.push({ ...docData, document_id: doc.id, sub_user: `sub_${index}` });
         index++;
     });
 
@@ -55,9 +56,10 @@ export const getAutoBidSubUsersService = async () => {
     const querySnapshot = await snapshot.get();
     const data = []
     querySnapshot?.forEach((doc) => {
-        data.push({ ...doc.data(), 
-            document_id: doc.id, 
-            sub_user_access_token: decrypt(doc.data()["sub_user_access_token"]) 
+        data.push({
+            ...doc.data(),
+            document_id: doc.id,
+            sub_user_access_token: decrypt(doc.data()["sub_user_access_token"])
         });
     });
 
@@ -68,8 +70,8 @@ export const getAutoBidSubUsersService = async () => {
     }
 }
 
-export const updateSubUserService = async (sub_user_id,body) => {
-    try{
+export const updateSubUserService = async (sub_user_id, body) => {
+    try {
         console.log(body)
         await subUserCollection
             .doc(sub_user_id)
@@ -79,13 +81,13 @@ export const updateSubUserService = async (sub_user_id,body) => {
 
         return {
             status: 200,
-            message:"Sub User Updated Successfully"
+            message: "Sub User Updated Successfully"
         }
-    }catch(e){
+    } catch (e) {
         console.log(e);
         return {
             status: 500,
-            message:"Error: "+ e.message
+            message: "Error: " + e.message
         }
     }
 }
