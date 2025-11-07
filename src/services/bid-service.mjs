@@ -202,3 +202,4 @@ export const autoBidService = async ({ sub_user_doc_id, projectsToBid, bidderId,
         }
     }
 }
+

@@ -34,10 +34,12 @@ export const getSubUsersService = async ({ uid }) => {
     const snapshot = subUserCollection.where("parent_uid", "==", uid);
 
     const querySnapshot = await snapshot.get();
-    const data = []
+    const data = [];
+    let index=0;
     querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-        data.push({ ...doc.data(), document_id: doc.id, sub_user_access_token: decrypt(doc.data()["sub_user_access_token"]) });
+        delete doc.data()["sub_user_access_token"];
+        data.push({ ...doc.data(), document_id: doc.id, sub_user: `sub_${index}` });
+        index++;
     });
 
     return {
@@ -53,7 +55,10 @@ export const getAutoBidSubUsersService = async () => {
     const querySnapshot = await snapshot.get();
     const data = []
     querySnapshot?.forEach((doc) => {
-        data.push({ ...doc.data(), document_id: doc.id, sub_user_access_token: decrypt(doc.data()["sub_user_access_token"]) });
+        data.push({ ...doc.data(), 
+            document_id: doc.id, 
+            sub_user_access_token: decrypt(doc.data()["sub_user_access_token"]) 
+        });
     });
 
     return {

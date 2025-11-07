@@ -1,13 +1,12 @@
 import * as tokenService from '../services/token-service.mjs'
 
 export const createAccessTokenController = async (req, res) => {
-    const idToken = req.user;
+    const { parent_token, uid } = req.user;
     try {
-        const decoded = await admin.auth().verifyIdToken(idToken);
-        if (decoded.uid) {
+        if (uid && parent_token) {
             const token = await tokenService.createAccessToken({
-                uid: decoded.uid,
-                parentToken: idToken
+                uid,
+                parentToken: parent_token
             });
 
             res.status(200).send({
@@ -18,8 +17,13 @@ export const createAccessTokenController = async (req, res) => {
                 }
             });
         }
+
+        res.status(401).send({
+            status: 401,
+            message: "Invalid token"
+        })
     } catch (err) {
         console.error(err);
-        res.status(401).json({ message: 'Invalid token' });
+        res.status(500).json({ message: err.message });
     }
 }

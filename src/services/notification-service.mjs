@@ -5,12 +5,12 @@ import { FieldValue } from "firebase-admin/firestore";
 const subUserCollection = db.collection('sub-user')
 
 export const markNotificationRead = async ({ subUserId, notificationId }) => {
-    const collection = await subUserCollection
+    const collection = subUserCollection
         .doc(subUserId)
         .collection("notifications")
         .doc(notificationId);
         
-    collection.update({ is_read });
+    await collection.update({ is_read });
 
     console.log(`✅ Notification ${notificationId} marked as read`);
 };
@@ -20,7 +20,6 @@ export const getAllNotificationService = async ({ subUserId, onlyUnread = false 
         let query = subUserCollection.doc(subUserId).collection("notifications");
         if (onlyUnread) query = query.where("is_read", "==", false);
         const snapshot = await query.orderBy("created_at", "desc").get();
-        console.log(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }catch(e){
         console.log(e);

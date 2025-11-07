@@ -3,7 +3,7 @@ import { getUnixTimestamp } from "../utils/date-utils.mjs";
 import { buildQueryParams } from "../utils/build-query-params.mjs";
 import { filterProjects } from "../utils/filter-projects.mjs";
 
-const api= axios.create({
+const api = axios.create({
     baseURL: "https://www.freelancer.com",
 });
 
@@ -60,7 +60,8 @@ export const fetchUserSkillsService = async (userId) => {
     return (skills)
 }
 
-export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle}) => {
+export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
+    console.log(projectId,bidderId,bidAmount,proposal,bidderAccessToken,bidderName,projectTitle);
     const bidResponse = await api.post(
         `/api/projects/0.1/bids/`,
         {
@@ -74,11 +75,12 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
         {
             headers: {
                 'Authorization': `Bearer ${bidderAccessToken}`,
+                'Content-Type': 'application/json'
             },
         }
     );
 
-    if(bidResponse.status===200){
+    if (bidResponse.status === 200) {
         return {
             status: 200,
             message: `Auto Bid Done successfully for user ${bidderName} on Project: ${projectTitle}`,

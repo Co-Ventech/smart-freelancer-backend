@@ -1,13 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import { generateAIProposal } from "./src/openai/proposalGenerator.mjs";
-import { getSavedBidController, saveBidHistoryController, toggleAutoBidController } from "./src/controller/bid-controller.mjs";
+import { getSavedBidController, placeBidController, saveBidHistoryController, toggleAutoBidController } from "./src/controller/bid-controller.mjs";
 import cors from "cors";
 import { createSubUser, getSubUsers, updateSubUserController } from "./src/controller/sub-user-controller.mjs";
 import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
 import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
-import { validateUser } from "./src/validator/auth-validator.mjs";
+import { validateUser, verifyTokenFromFirebase } from "./src/middleware/auth-middleware.mjs";
 import { createAccessTokenController } from "./src/controller/token-controller.mjs";
 
 dotenv.config();
@@ -46,14 +46,15 @@ app.post("/generate-proposal", async (req, res) => {
 
 
 app.post('/save-bid-history', validateUser, saveBidHistoryController);
-app.get('/bids', validateUser, getSavedBidController)
+app.get('/bids', validateUser, getSavedBidController);
+app.post('/bid', validateUser, placeBidController);
 app.post('/sub-users', validateUser, createSubUser);
 app.get('/sub-users', validateUser, getSubUsers);
 app.patch('/sub-users', validateUser, updateSubUserController);
 app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 app.get('/notifications', validateUser, getAllNotificationsController);
 app.post('/notifications/mark-read', validateUser, markNotificationReadController);
-app.post('/access-token', validateUser, createAccessTokenController);
+app.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
 // app.post('/login', loginController);
 
 
