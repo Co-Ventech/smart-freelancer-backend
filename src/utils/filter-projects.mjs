@@ -20,9 +20,9 @@ export const filterProjects = (resProjects, resUsers) => {
         const clientRating = resUsers[String(ownerId)]?.employer_reputation?.entire_history?.overall;
 
         if (typeof clientRating === 'number' //|| isPaymentVerified
-            ) {
+        ) {
             // optionally require integer rating (reject 4.5 etc) or accept decimals
-            const passesRating = Number.isInteger(clientRating) && clientRating >= MIN_EMPLOYER_RATING;
+            const passesRating = parseFloat(clientRating) >= MIN_EMPLOYER_RATING;
 
             if (passesRating) {
                 console.log(`Auto-bid allowed for project ${project.id} (owner ${ownerId}) — rep ${clientRating}`);

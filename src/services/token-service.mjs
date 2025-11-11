@@ -9,12 +9,14 @@ export const createAccessToken = async ({ uid, parentToken }) => {
     const querySnapshot = await snapshot.get();
     const data = {
         'main': parentToken,
-        'sub_users':{}
+        'sub_users':{},
+        "role": null
     }
     let index = 0;
     querySnapshot?.forEach(doc => {
         console.log(doc?.data()["sub_user_access_token"]);
         data['sub_users'][`sub_${index}`] = doc?.data()["sub_user_access_token"];
+        data['role']= doc?.data()['role'];
         index++;
     });
     console.log(data);

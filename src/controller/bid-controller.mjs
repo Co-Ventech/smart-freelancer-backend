@@ -1,6 +1,5 @@
 import { getSavedBidsService, saveBidService, toggleAutoBidService } from "../services/bid-service.mjs"
 import { placeBid } from "../services/freelancer-service.mjs";
-import { createNotificationService } from "../services/notification-service.mjs";
 import { decrypt } from "../utils/crypto.mjs";
 
 export const saveBidHistoryController = async (req, res) => {
@@ -27,7 +26,6 @@ export const placeBidController = async (req, res) => {
     // res.json(req?.user)
     const { bid_via, projectId, seo_url, projectType, bidderId, bidAmount, proposal, bidderName, projectTitle, projectDescription, budget } = req?.body;
     const { sub_users } = req?.user;
-    console.log("Sub Users: ",sub_users[`${bid_via}`]);
     const access_token= decrypt(sub_users[`${bid_via}`]);
     const result = await placeBid({
         bidderAccessToken: access_token,

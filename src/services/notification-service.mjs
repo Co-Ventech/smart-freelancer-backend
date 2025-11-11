@@ -4,13 +4,13 @@ import { FieldValue } from "firebase-admin/firestore";
 
 const subUserCollection = db.collection('sub-user')
 
-export const markNotificationRead = async ({ subUserId, notificationId }) => {
+export const markNotificationRead = async ({ subUserId, notificationId, isRead }) => {
     const collection = subUserCollection
         .doc(subUserId)
         .collection("notifications")
         .doc(notificationId);
         
-    await collection.update({ is_read });
+    await collection.update({ is_read: isRead });
 
     console.log(`✅ Notification ${notificationId} marked as read`);
 };

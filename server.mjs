@@ -7,8 +7,9 @@ import { createSubUser, getSubUsers, updateSubUserController } from "./src/contr
 import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
 import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
-import { validateUser, verifyTokenFromFirebase } from "./src/middleware/auth-middleware.mjs";
+import { validateAdminUser, validateUser, verifyTokenFromFirebase } from "./src/middleware/auth-middleware.mjs";
 import { createAccessTokenController } from "./src/controller/token-controller.mjs";
+import { getAllUsersController } from "./src/controller/user-controller.mjs";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.get('/bids', validateUser, getSavedBidController);
 app.post('/bid', validateUser, placeBidController);
 app.post('/sub-users', validateUser, createSubUser);
 app.get('/sub-users', validateUser, getSubUsers);
+app.get('/users', validateAdminUser, getAllUsersController);
 app.patch('/sub-users', validateUser, updateSubUserController);
 app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 app.get('/notifications', validateUser, getAllNotificationsController);
