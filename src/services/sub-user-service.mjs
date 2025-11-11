@@ -91,3 +91,34 @@ export const updateSubUserService = async (sub_user_id, body) => {
         }
     }
 }
+
+export const deleteSubUserService = async (sub_user_id, parent_uid) => {
+    try {
+        const snapshot = await subUserCollection.where("parent_uid", "==", parent_uid).where("sub_user_id", "==", sub_user_id).get();
+
+        if (snapshot.empty) {
+            console.log("No matching documents.");
+            return {
+                status: 404,
+                message: "No Sub User found"
+            }
+        }
+        // delete all matching docs
+        const batch = db.batch();
+        snapshot.forEach((doc) => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
+
+        return {
+            status: 200,
+            message: "Sub User Updated Successfully"
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            status: 500,
+            message: "Error: " + e.message
+        }
+    }
+}

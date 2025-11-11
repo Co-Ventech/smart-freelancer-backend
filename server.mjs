@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { generateAIProposal } from "./src/openai/proposalGenerator.mjs";
 import { getSavedBidController, placeBidController, saveBidHistoryController, toggleAutoBidController } from "./src/controller/bid-controller.mjs";
 import cors from "cors";
-import { createSubUser, getSubUsers, updateSubUserController } from "./src/controller/sub-user-controller.mjs";
+import { createSubUser, deleteSubuserController, getSubUsers, updateSubUserController } from "./src/controller/sub-user-controller.mjs";
 import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
 import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
@@ -51,9 +51,9 @@ app.get('/bids', validateUser, getSavedBidController);
 app.post('/bid', validateUser, placeBidController);
 app.post('/sub-users', validateUser, createSubUser);
 app.get('/sub-users', validateUser, getSubUsers);
-app.get('/users', validateAdminUser, getAllUsersController);
-app.delete('remove-subuser', validateUser,)
 app.patch('/sub-users', validateUser, updateSubUserController);
+app.delete('/sub-users', validateUser, deleteSubuserController)
+app.get('/users', validateAdminUser, getAllUsersController);
 app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 app.get('/notifications', validateUser, getAllNotificationsController);
 app.post('/notifications/mark-read', validateUser, markNotificationReadController);

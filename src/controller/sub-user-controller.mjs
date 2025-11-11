@@ -1,4 +1,4 @@
-import { createSubUserService, getSubUsersService, updateSubUserService } from "../services/sub-user-service.mjs";
+import { createSubUserService, deleteSubUserService, getSubUsersService, updateSubUserService } from "../services/sub-user-service.mjs";
 
 export const createSubUser = async (req, res) => {
     const { sub_user_access_token,
@@ -44,6 +44,9 @@ export const updateSubUserController = async (req, res) => {
 }
 
 export const deleteSubuserController = async (req, res) => {
-    const {sub_user_id, parent_uid} = req?.query;
-    
+    const { sub_user_id, parent_uid } = req?.query;
+    const result = await deleteSubUserService(sub_user_id, parent_uid)
+    res.status(result.status).send({
+        ...result
+    });
 }
