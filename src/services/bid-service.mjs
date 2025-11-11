@@ -41,33 +41,36 @@ export const saveBidService = async (body) => {
 }
 
 export const getSavedBidsService = async (query) => {
-
+    const { page = 1, offset = 10, bid_id, bidder_type, bidder_id, type } = query;
     try {
         let snapshot = bidCollection;
-        if (query?.bid_id) {
-            const data = (await snapshot.doc(query?.bid_id).get()).data();
+
+        if (bid_id) {
+            // get one saved bid via bid_id
+            const doc = await snapshot.doc(bid_id).get();
             return {
                 status: 200,
                 message: "Bids fetched successfully",
-                data: data
-            }
+                data: doc.exists ? doc.data() : null
+            };
         }
-        if (query?.bidder_type) {
-            snapshot = snapshot.where('bidder_type', '==', query?.bidder_type); //eg: manual, auto
-        }
-        if (query?.bidder_id) {
-            const bidderId = isNaN(query.bidder_id)
-                ? query.bidder_id              // e.g. "MANUAL_BIDDER"
-                : Number(query.bidder_id);     // e.g. 88454359 as number
 
-            snapshot = snapshot.where('bidder_id', '==', bidderId); //bidded from zameer, zubair, co-ventech, ahsan's bidder id
+        if (bidder_type) snapshot = snapshot.where('bidder_type', '==', bidder_type);
+
+        if (bidder_id) {
+            const bidderId = isNaN(bidder_id) ? bidder_id : Number(bidder_id);
+            snapshot = snapshot.where('bidder_id', '==', bidderId);
         }
-        if (query?.type) {
-            snapshot = snapshot.where('type', '==', query?.type);
-        }
+
+        if (type) snapshot = snapshot.where('type', '==', type);
+
+        // Pagination logic
+        const startIndex = (page - 1) * offset;
+        snapshot = snapshot.offset(startIndex).limit(offset);
 
         const querySnapshot = await snapshot.get();
-        const data = []
+
+        const data = [];
         querySnapshot.forEach((doc) => {
             data.push({ ...doc.data(), document_id: doc.id });
         });
@@ -75,16 +78,22 @@ export const getSavedBidsService = async (query) => {
         return {
             status: 200,
             message: "Bids fetched successfully",
-            data: data
-        }
+            data,
+            pagination: {
+                page: Number(page),
+                limit: Number(offset),
+                count: data.length
+            }
+        };
     } catch (e) {
-        console.log(e)
+        console.error(e);
         return {
             status: 500,
             message: e.message
-        }
+        };
     }
-}
+};
+
 
 export const toggleAutoBidService = async ({ bidder_id }) => {
     const snapshot = await subUserCollection.where("user_bid_id", "==", parseInt(bidder_id)).get();
