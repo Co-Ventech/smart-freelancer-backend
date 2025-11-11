@@ -69,7 +69,6 @@ export const getSavedBidsService = async (query) => {
         const querySnapshot = await snapshot.get();
         const data = []
         querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
             data.push({ ...doc.data(), document_id: doc.id });
         });
 

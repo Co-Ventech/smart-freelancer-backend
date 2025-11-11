@@ -13,6 +13,9 @@ export const getAllUsers= async()=>{
 
     const data= [];
     querySnapshot?.forEach(doc=>{
+        if(doc?.data()["role"]==="admin"){ 
+            return;
+        }
         data?.push({...doc.data()})
     });
 

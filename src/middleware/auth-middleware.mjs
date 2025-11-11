@@ -68,6 +68,7 @@ export const validateAdminUser = async (req, res, next) => {
 
   try {
     const decodedJwt = jwt.verify(idToken, process.env.JWT_SECRET);
+    console.log(decodedJwt)
     if (decodedJwt?.main !== null && decodedJwt?.role === "admin") {
       const decoded = await admin.auth().verifyIdToken(decodedJwt?.main);
       if (decoded?.uid) {

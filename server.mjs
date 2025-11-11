@@ -52,6 +52,7 @@ app.post('/bid', validateUser, placeBidController);
 app.post('/sub-users', validateUser, createSubUser);
 app.get('/sub-users', validateUser, getSubUsers);
 app.get('/users', validateAdminUser, getAllUsersController);
+app.delete('remove-subuser', validateUser,)
 app.patch('/sub-users', validateUser, updateSubUserController);
 app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 app.get('/notifications', validateUser, getAllNotificationsController);
