@@ -7,7 +7,6 @@ import { calculateBidAmount } from "../utils/calculate-bid-amount.mjs";
 import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
 import { createNotificationService } from "./notification-service.mjs";
-import { getCountFromServer } from "firebase/firestore"; 
 
 const bidCollection = db.collection('bids');
 const subUserCollection = db.collection('sub-user');
@@ -46,40 +45,35 @@ export const getSavedBidsService = async (query) => {
     try {
         let snapshot = bidCollection;
 
-        // Fetch by id directly
         if (bid_id) {
+            // get one saved bid via bid_id
             const doc = await snapshot.doc(bid_id).get();
             return {
                 status: 200,
-                message: "Bid fetched successfully",
+                message: "Bids fetched successfully",
                 data: doc.exists ? doc.data() : null
             };
         }
 
-        // Filters
-        if (bidder_type) snapshot = snapshot.where("bidder_type", "==", bidder_type);
+        if (bidder_type) snapshot = snapshot.where('bidder_type', '==', bidder_type);
+
         if (bidder_id) {
             const bidderId = isNaN(bidder_id) ? bidder_id : Number(bidder_id);
-            snapshot = snapshot.where("bidder_id", "==", bidderId);
+            snapshot = snapshot.where('bidder_id', '==', bidderId);
         }
-        if (type) snapshot = snapshot.where("type", "==", type);
 
-        // ✅ Get total count using aggregation query
-        const countSnap = await getCountFromServer(snapshot);
-        const totalCount = countSnap.data().count;
+        if (type) snapshot = snapshot.where('type', '==', type);
 
         // Pagination logic
         const startIndex = (page - 1) * offset;
-        const paginatedQuery = snapshot.orderBy("createdAt", "desc").offset(startIndex).limit(offset);
-        const querySnapshot = await paginatedQuery.get();
+        snapshot = snapshot.offset(startIndex).limit(offset);
+
+        const querySnapshot = await snapshot.get();
 
         const data = [];
         querySnapshot.forEach((doc) => {
             data.push({ ...doc.data(), document_id: doc.id });
         });
-
-        // ✅ Calculate if next page exists
-        const isNext = totalCount > page * offset;
 
         return {
             status: 200,
@@ -88,8 +82,7 @@ export const getSavedBidsService = async (query) => {
             pagination: {
                 page: Number(page),
                 limit: Number(offset),
-                total: totalCount,
-                isNext
+                count: data.length
             }
         };
     } catch (e) {
