@@ -86,7 +86,8 @@ export const getSavedBidsService = async (query) => {
                 page: Number(page),
                 limit: Number(offset),
                 count: data.length,
-                is_next: totalCount - startIndex > offset ? true : false
+                is_next: totalCount - startIndex > offset ? true : false,
+                total: totalCount
             }
         };
     } catch (e) {
