@@ -15,7 +15,6 @@ export const createAccessToken = async ({ uid, parentToken }) => {
     }
     let index = 0;
     querySnapshot?.forEach(doc => {
-        console.log("ROLE: ",doc?.data()["role"]);
         data['sub_users'][`sub_${index}`] = doc?.data()["sub_user_access_token"];
         index++;
     });
