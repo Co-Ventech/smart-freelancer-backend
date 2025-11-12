@@ -63,8 +63,8 @@ app.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
 // auto-bid
-const schedule = '*/1 * * * *';
-nodeCron.schedule(schedule, scheduleAutoBidController)
+// const schedule = '*/1 * * * *';
+// nodeCron.schedule(schedule, scheduleAutoBidController)
 
 
 

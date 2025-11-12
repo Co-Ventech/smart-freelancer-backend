@@ -7,6 +7,7 @@ import { calculateBidAmount } from "../utils/calculate-bid-amount.mjs";
 import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
 import { createNotificationService } from "./notification-service.mjs";
+import { start } from "repl";
 
 const bidCollection = db.collection('bids');
 const subUserCollection = db.collection('sub-user');
@@ -64,9 +65,11 @@ export const getSavedBidsService = async (query) => {
 
         if (type) snapshot = snapshot.where('type', '==', type);
 
+        const totalCount = ((await snapshot.count().get()).data().count)
+
         // Pagination logic
         const startIndex = (page - 1) * offset;
-        snapshot = snapshot.offset(startIndex).limit(offset);
+        snapshot = snapshot.offset(startIndex).limit(parseInt(offset));
 
         const querySnapshot = await snapshot.get();
 
@@ -82,7 +85,8 @@ export const getSavedBidsService = async (query) => {
             pagination: {
                 page: Number(page),
                 limit: Number(offset),
-                count: data.length
+                count: data.length,
+                is_next: totalCount - startIndex > offset ? true : false
             }
         };
     } catch (e) {
