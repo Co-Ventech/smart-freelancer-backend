@@ -18,7 +18,7 @@ export const markNotificationRead = async ({ subUserId, notificationId, isRead }
 export const getAllNotificationService = async ({ subUserId, onlyUnread = false }) => {
     try{
         let query = subUserCollection.doc(subUserId).collection("notifications");
-        if (onlyUnread) query = query.where("is_read", "==", false);
+        if (onlyUnread) query = query.where("is_read", "==", false).limit(10);
         const snapshot = await query.orderBy("created_at", "desc").get();
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }catch(e){
