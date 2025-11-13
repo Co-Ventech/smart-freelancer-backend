@@ -18,7 +18,6 @@ export const createAccessToken = async ({ uid, parentToken }) => {
         data['sub_users'][`sub_${index}`] = doc?.data()["sub_user_access_token"];
         index++;
     });
-    console.log(data);
     const token = createJwtToken(data);
     return token;
 }

@@ -11,7 +11,6 @@ export const scheduleAutoBidController = async () => {
             console.log(user)
             const skills = await fetchUserSkillsService(user?.user_bid_id);
             const projects = await fetchProjectsOfUserService(skills, user?.sub_user_access_token);
-            console.log(projects.projects)
             const autoBidResponse = await autoBidService({
                 sub_user_doc_id: user?.document_id,
                 general_proposal: user?.general_proposal,
