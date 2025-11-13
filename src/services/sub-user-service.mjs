@@ -26,7 +26,7 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
         });
 
     if (autobid_enabled) {
-        await insertAutoBidCache({
+        insertAutoBidCache({
             sub_user_access_token: hashedToken,
             sub_username,
             autobid_enabled,
@@ -65,7 +65,7 @@ export const getSubUsersService = async ({ uid }) => {
 }
 
 export const getAutoBidSubUsersService = async () => {
-    const autoBidSubUsers = await getAllAutoBidUsersCache();
+    const autoBidSubUsers = getAllAutoBidUsersCache();
     const data = []
     for (const user of autoBidSubUsers) {
         if (user?.autobid_enabled === true) {
@@ -101,15 +101,15 @@ export const updateSubUserService = async (sub_user_id, body) => {
                 ...body
             });
 
-            if(body?.autobid_enabled===false){
-                await deleteAutoBidUserCache(sub_user_id)
-            }else{                
-                const updatedDoc = await subUserCollection.doc(sub_user_id).get();
-                const updatedData = { sub_user_id, ...updatedDoc.data(), document_id: sub_user_id };
-        
-                // now update your cache
-                await insertAutoBidCache(updatedData);
-            }
+        if (body?.autobid_enabled === false) {
+            deleteAutoBidUserCache(sub_user_id)
+        } else {
+            const updatedDoc = await subUserCollection.doc(sub_user_id).get();
+            const updatedData = { sub_user_id, ...updatedDoc.data(), document_id: sub_user_id };
+
+            // now update your cache
+            insertAutoBidCache(updatedData);
+        }
         return {
             status: 200,
             message: "Sub User Updated Successfully"
@@ -138,6 +138,7 @@ export const deleteSubUserService = async (sub_user_id, parent_uid) => {
         snapshot.forEach((doc) => {
             batch.delete(doc.ref);
         });
+        deleteAutoBidUserCache(sub_user_id)
         await batch.commit();
 
         return {
