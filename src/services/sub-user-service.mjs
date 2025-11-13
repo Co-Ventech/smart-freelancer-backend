@@ -5,6 +5,7 @@ import { decrypt, encrypt } from "../utils/crypto.mjs";
 import admin from "firebase-admin";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
 import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
+import { deleteAutoBidUserCache, getAllAutoBidUsersCache, insertAutoBidCache } from "../cache/auto-bid-users.mjs";
 
 const subUserCollection = db.collection('sub-user')
 
@@ -23,6 +24,18 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
             autobid_enabled_for_job_type,
             created_at: admin.firestore.FieldValue.serverTimestamp(),
         });
+
+    if (autobid_enabled) {
+        await insertAutoBidCache({
+            sub_user_access_token: hashedToken,
+            sub_username,
+            autobid_enabled,
+            user_bid_id: userBidId,
+            general_proposal,
+            autobid_enabled_for_job_type,
+            document_id: generatedUUID
+        })
+    }
 
     return {
         status: 200,
@@ -52,16 +65,26 @@ export const getSubUsersService = async ({ uid }) => {
 }
 
 export const getAutoBidSubUsersService = async () => {
-    const snapshot = subUserCollection.where("autobid_enabled", "==", true);
-    const querySnapshot = await snapshot.get();
+    const autoBidSubUsers = await getAllAutoBidUsersCache();
     const data = []
-    querySnapshot?.forEach((doc) => {
-        data.push({
-            ...doc.data(),
-            document_id: doc.id,
-            sub_user_access_token: decrypt(doc.data()["sub_user_access_token"])
-        });
-    });
+    for (const user of autoBidSubUsers) {
+        if (user?.autobid_enabled === true) {
+            data.push({
+                ...user,
+                document_id: user?.document_id,
+                sub_user_access_token: decrypt(user["sub_user_access_token"])
+            });
+        }
+    }
+    // const snapshot = subUserCollection.where("autobid_enabled", "==", true);
+    // const querySnapshot = await snapshot.get();
+    // querySnapshot?.forEach((doc) => {
+    //     data.push({
+    //         ...doc.data(),
+    //         document_id: doc.id,
+    //         sub_user_access_token: decrypt(doc.data()["sub_user_access_token"])
+    //     });
+    // });
 
     return {
         status: 200,
@@ -72,13 +95,21 @@ export const getAutoBidSubUsersService = async () => {
 
 export const updateSubUserService = async (sub_user_id, body) => {
     try {
-        console.log(body)
         await subUserCollection
             .doc(sub_user_id)
             .update({
                 ...body
             });
 
+            if(body?.autobid_enabled===false){
+                await deleteAutoBidUserCache(sub_user_id)
+            }else{                
+                const updatedDoc = await subUserCollection.doc(sub_user_id).get();
+                const updatedData = { sub_user_id, ...updatedDoc.data(), document_id: sub_user_id };
+        
+                // now update your cache
+                await insertAutoBidCache(updatedData);
+            }
         return {
             status: 200,
             message: "Sub User Updated Successfully"
@@ -95,7 +126,6 @@ export const updateSubUserService = async (sub_user_id, body) => {
 export const deleteSubUserService = async (sub_user_id, parent_uid) => {
     try {
         const snapshot = await subUserCollection.where("parent_uid", "==", parent_uid).where("sub_user_id", "==", sub_user_id).get();
-
         if (snapshot.empty) {
             console.log("No matching documents.");
             return {
