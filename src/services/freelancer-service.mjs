@@ -62,35 +62,43 @@ export const fetchUserSkillsService = async (userId) => {
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
     console.log(projectId,bidderId,bidAmount,proposal,bidderAccessToken,bidderName,projectTitle);
-    const bidResponse = await api.post(
-        `/api/projects/0.1/bids/`,
-        {
-            project_id: projectId,
-            bidder_id: bidderId,
-            amount: bidAmount,
-            period: 5,
-            description: proposal,
-            milestone_percentage: 100,
-        },
-        {
-            headers: {
-                'Authorization': `Bearer ${bidderAccessToken}`,
-                'Content-Type': 'application/json'
+    try{
+
+        const bidResponse = await api.post(
+            `/api/projects/0.1/bids/`,
+            {
+                project_id: projectId,
+                bidder_id: bidderId,
+                amount: bidAmount,
+                period: 5,
+                description: proposal,
+                milestone_percentage: 100,
             },
+            {
+                headers: {
+                    'Authorization': `Bearer ${bidderAccessToken}`,
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
+    
+        if (bidResponse.status === 200) {
+            return {
+                status: 200,
+                message: `Auto Bid Done successfully for user ${bidderName} on Project: ${projectTitle}`,
+                data: bidResponse?.data
+            }
         }
-    );
-
-    if (bidResponse.status === 200) {
+    
         return {
-            status: 200,
-            message: `Auto Bid Done successfully for user ${bidderName} on Project: ${projectTitle}`,
-            data: bidResponse?.data
+            status: bidResponse.status,
+            message: bidResponse?.message
         }
-    }
-
-    return {
-        status: bidResponse.status,
-        message: bidResponse?.message
+    }catch(e){
+        return {
+            status: 500,
+            message: e.message
+        }
     }
 
 }
