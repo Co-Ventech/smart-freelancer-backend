@@ -5,6 +5,7 @@ import { getAutoBidSubUsersService } from "../services/sub-user-service.mjs";
 export const scheduleAutoBidController = async () => {
     console.log("task executing.....");
     const autoBidEnabledUsers = getAutoBidSubUsersService();
+    console.log(autoBidEnabledUsers);
     if (autoBidEnabledUsers.status === 200 && autoBidEnabledUsers.data?.length > 0) {
         // fetch user's skills 
         await Promise.allSettled(autoBidEnabledUsers?.data?.map(async (user) => {
