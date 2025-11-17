@@ -64,8 +64,12 @@ export const getSubUsersService = async ({ uid }) => {
 
 }
 
-export const getAutoBidSubUsersService = async () => {
+export const getAutoBidSubUsersService = () => {
     const autoBidSubUsers = getAllAutoBidUsersCache();
+
+    if(!Array.isArray(autoBidSubUsers)){
+        return [];
+    }
     const data = []
     for (const user of autoBidSubUsers) {
         if (user?.autobid_enabled === true) {

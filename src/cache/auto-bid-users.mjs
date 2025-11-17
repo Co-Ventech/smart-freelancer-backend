@@ -58,6 +58,6 @@ export const updateAutoBidUserCache = async (updatedUser) => {
 };
 
 // 📦 Get all users
-export const getAllAutoBidUsersCache = async () => {
+export const getAllAutoBidUsersCache = () => {
   return readCache();
 };
