@@ -67,8 +67,20 @@ export const getSubUsersService = async ({ uid }) => {
 export const getAutoBidSubUsersService = () => {
     const autoBidSubUsers = getAllAutoBidUsersCache();
 
-    if(!Array.isArray(autoBidSubUsers)){
-        return [];
+    if (!Array.isArray(autoBidSubUsers)) {
+        return {
+            status: 404,
+            message: "No auto-bid users found",
+            data: []
+        };
+    }
+    if (autoBidSubUsers?.length === 0) {
+        return {
+            status: 404,
+            message: "No auto-bid users found",
+            data: []
+        };
+
     }
     const data = []
     for (const user of autoBidSubUsers) {
