@@ -14,13 +14,15 @@ import { getAllUsersController } from "./src/controller/user-controller.mjs";
 dotenv.config();
 
 const app = express();
+const router= express.Router();
+
 app.use(express.json());
 app.use(cors({
   origin: '*'
 }));
 
 // === POST route to generate proposal ===
-app.post("/generate-proposal", async (req, res) => {
+router.post("/generate-proposal", async (req, res) => {
   const { id, title, description, name } = req.body;
 
   if (!title || !description) {
@@ -46,19 +48,22 @@ app.post("/generate-proposal", async (req, res) => {
 });
 
 
-app.post('/save-bid-history', validateUser, saveBidHistoryController);
-app.get('/bids', validateUser, getSavedBidController);
-app.post('/bid', validateUser, placeBidController);
-app.post('/sub-users', validateUser, createSubUser);
-app.get('/sub-users', validateUser, getSubUsers);
-app.patch('/sub-users', validateUser, updateSubUserController);
-app.delete('/sub-users', validateUser, deleteSubuserController)
-app.get('/users', validateAdminUser, getAllUsersController);
-app.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
-app.get('/notifications', validateUser, getAllNotificationsController);
-app.post('/notifications/mark-read', validateUser, markNotificationReadController);
-app.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
+router.post('/save-bid-history', validateUser, saveBidHistoryController);
+router.get('/bids', validateUser, getSavedBidController);
+router.post('/bid', validateUser, placeBidController);
+router.post('/sub-users', validateUser, createSubUser);
+router.get('/sub-users', validateUser, getSubUsers);
+router.patch('/sub-users', validateUser, updateSubUserController);
+router.delete('/sub-users', validateUser, deleteSubuserController)
+router.get('/users', validateAdminUser, getAllUsersController);
+router.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
+router.get('/notifications', validateUser, getAllNotificationsController);
+router.post('/notifications/mark-read', validateUser, markNotificationReadController);
+router.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
 // app.post('/login', loginController);
+
+app.use('/api',router)
+
 
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
