@@ -8,6 +8,7 @@ import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
 import { createNotificationService } from "./notification-service.mjs";
 import { start } from "repl";
+import { updateGeneralProposal } from "../utils/modify-general-proposal.mjs";
 
 const bidCollection = db.collection('bids');
 const subUserCollection = db.collection('sub-user');
@@ -125,7 +126,7 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 
 
-export const autoBidService = async ({ sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
+export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
     for (const project of projectsToBid) {
         if (autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || (project.type === autobid_type)) {
             try {
@@ -138,12 +139,15 @@ export const autoBidService = async ({ sub_user_doc_id, projectsToBid, bidderId,
                     }
                 }
 
+                const ownerId = project.owner_id || project.owner?.id || project.user_id || null;
+                const clientName = clients[String(ownerId)]?.public_name;
+
                 const proposalResponse = autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED ?
-                    await generateAIProposal(project?.title, project?.description, bidderName) : null;
+                    await generateAIProposal(clientName, project?.title, project?.description, bidderName) : null;
                 let proposal = null;
 
-                if (!proposalResponse) {
-                    proposal = general_proposal;
+                if (!proposalResponse || proposalResponse?.status !== 200) {
+                    proposal = updateGeneralProposal(clientName, general_proposal);
                 } else {
                     if (proposalResponse?.status === 200) {
                         proposal = proposalResponse?.data;
@@ -158,7 +162,7 @@ export const autoBidService = async ({ sub_user_doc_id, projectsToBid, bidderId,
                 console.log(`Proposal generated for project ${project.id}:`, proposal);
                 console.log(`Placing bid for project ${project.id} with amount ${bidAmount}...`);
 
-                const retryCount = 0;
+                let retryCount = 0;
 
                 while (retryCount <= 4) {
                     const bidResponse = await placeBid({
@@ -196,6 +200,8 @@ export const autoBidService = async ({ sub_user_doc_id, projectsToBid, bidderId,
                             notificationTitle: `Auto Bid Done from ${bidderName}`,
                             notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bidded from ${bidderName}`
                         });
+                        break;
+                    } else if(bidResponse?.status===409){
                         break;
                     } else {
                         retryCount++;

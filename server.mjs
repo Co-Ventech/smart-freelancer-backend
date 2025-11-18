@@ -23,7 +23,7 @@ app.use(cors({
 
 // === POST route to generate proposal ===
 router.post("/generate-proposal", async (req, res) => {
-  const { id, title, description, name } = req.body;
+  const { id, title, description, name, client_public_name } = req.body;
 
   if (!title || !description) {
     return res.status(400).json({ error: "Missing title or description." });
@@ -31,7 +31,7 @@ router.post("/generate-proposal", async (req, res) => {
 
   console.log(`🟢 Generating proposal for: ${title}`);
 
-  const result = await generateAIProposal(title, description, name);
+  const result = await generateAIProposal(client_public_name, title, description, name);
 
   if (result.status === 200) {
     res.status(result?.status).json({
