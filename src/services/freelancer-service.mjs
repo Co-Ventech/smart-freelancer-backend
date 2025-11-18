@@ -99,7 +99,7 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
 
         if (bidResponse?.message === "Request failed with status code 403") {
             return {
-                status: 409,
+                status: 403,
                 message: "You must be a verified freelancer to bid on this project"
             }
         }
