@@ -68,10 +68,8 @@ app.use('/api',router)
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
 // auto-bid
-const schedule = '*/1 * * * *';
-nodeCron.schedule(schedule, scheduleAutoBidController)
-
-
+const schedule = '*/30 * * * * *';
+nodeCron.schedule(schedule, scheduleAutoBidController).start();
 
 // === Start the server ===
 const PORT = process.env.PORT || 5000;

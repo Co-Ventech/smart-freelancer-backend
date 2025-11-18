@@ -61,8 +61,8 @@ export const fetchUserSkillsService = async (userId) => {
 }
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
-    console.log(projectId,bidderId,bidAmount,proposal,bidderAccessToken,bidderName,projectTitle);
-    try{
+    console.log(projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle);
+    try {
 
         const bidResponse = await api.post(
             `/api/projects/0.1/bids/`,
@@ -81,7 +81,7 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
                 },
             }
         );
-    
+
         if (bidResponse.status === 200) {
             return {
                 status: 200,
@@ -89,12 +89,26 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
                 data: bidResponse?.data
             }
         }
-    
+
+        if (bidResponse?.message === "Request failed with status code 409") {
+            return {
+                status: 409,
+                message: "You already have bidded on this project"
+            }
+        }
+
+        if (bidResponse?.message === "Request failed with status code 403") {
+            return {
+                status: 409,
+                message: "You must be a verified freelancer to bid on this project"
+            }
+        }
+
         return {
             status: bidResponse.status,
             message: bidResponse?.message
         }
-    }catch(e){
+    } catch (e) {
         return {
             status: 500,
             message: e.message

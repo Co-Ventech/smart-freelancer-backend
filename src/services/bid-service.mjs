@@ -173,7 +173,8 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                         projectTitle: project?.title,
                         projectId: project?.id,
                         bidderName,
-                    })
+                    });
+
                     if (bidResponse.status === 200) {
                         console.log(`Bid placed successfully for project ${project.id}`);
 
@@ -201,7 +202,7 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                             notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bidded from ${bidderName}`
                         });
                         break;
-                    } else if(bidResponse?.status===409){
+                    } else if (bidResponse?.status === 409) {
                         break;
                     } else {
                         retryCount++;
@@ -215,7 +216,6 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                     }
                 }
             } catch (err) {
-                // const errorMessage = handleApiError(err);
                 console.error(`Error processing project ${project.id}:`, err);
             }
         }

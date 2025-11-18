@@ -1,8 +1,8 @@
 import { getAllNotificationService, markNotificationRead } from "../services/notification-service.mjs";
 
 export const getAllNotificationsController = async (req, res) => {
-    const { sub_user_id } = req.query;
-    const data = await getAllNotificationService({ subUserId: sub_user_id });
+    const { sub_user_id, count  } = req.query;
+    const data = await getAllNotificationService({ subUserId: sub_user_id, count });
     return res.status(200).send({
         status: 200,
         message: "Notifications fetched successfully",
