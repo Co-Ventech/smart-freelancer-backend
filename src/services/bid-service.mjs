@@ -68,27 +68,27 @@ export const getSavedBidsService = async (query) => {
 
         if (type) snapshot = snapshot.where('type', '==', type);
 
-        const now = new Date();
-        if (date_from) {
-            let t = null;
-            switch (date_from) {
-                case "24 hours":
-                    t = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-                    break;
-                case "3 days":
-                    t = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-                    break;
-                case "7 days":
-                    t = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    break;
-                case "14 days":
-                    t = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-                    break;
-                default:
-                    break;
-            }
-            snapshot = snapshot.where("date", ">=", t);
-        }
+        // if (date_from) {
+        //     const now = new Date();
+        //     let t = null;
+        //     switch (date_from) {
+        //         case "24 hours":
+        //             t = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        //             break;
+        //         case "3 days":
+        //             t = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+        //             break;
+        //         case "7 days":
+        //             t = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        //             break;
+        //         case "14 days":
+        //             t = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        //     snapshot = snapshot.where("date", ">=", t);
+        // }
 
         const totalCount = ((await snapshot.count().get()).data().count)
 

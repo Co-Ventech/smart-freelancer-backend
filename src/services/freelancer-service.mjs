@@ -17,7 +17,7 @@ export const fetchUserBidId = async (sub_user_access_token) => {
 }
 
 export const fetchProjectsOfUserService = async (skillIds, sub_user_access_token) => {
-    const from_time = getUnixTimestamp(300);
+    const from_time = getUnixTimestamp(60);
     try {
         const params = {
             'jobs[]': skillIds,
