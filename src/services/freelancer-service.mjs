@@ -90,24 +90,20 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
             }
         }
 
-        if (bidResponse?.message === "Request failed with status code 409") {
+        if (bidResponse?.message == "Request failed with status code 409") {
             return {
                 status: 409,
                 message: "You already have bidded on this project"
             }
         }
 
-        if (bidResponse?.message === "Request failed with status code 403") {
+        if (bidResponse?.message == "Request failed with status code 403") {
             return {
                 status: 403,
                 message: "You must be a verified freelancer to bid on this project"
             }
         }
 
-        return {
-            status: bidResponse.status,
-            message: bidResponse?.message
-        }
     } catch (e) {
         return {
             status: 500,

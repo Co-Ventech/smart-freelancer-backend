@@ -13,6 +13,8 @@ import { updateGeneralProposal } from "../utils/modify-general-proposal.mjs";
 const bidCollection = db.collection('bids');
 const subUserCollection = db.collection('sub-user');
 
+const alreadyBiddedCache = [];
+
 
 export const saveBidService = async (body) => {
 
@@ -128,7 +130,7 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
     for (const project of projectsToBid) {
-        if (autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || (project.type === autobid_type)) {
+        if ((autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || (project.type === autobid_type)) && alreadyBiddedCache?.filter((val) => val === project?.id)?.length === 0) {
             try {
                 const bidAmount = calculateBidAmount(project);
                 // Skip projects that do not meet the criteria
@@ -164,7 +166,7 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
 
                 let retryCount = 0;
 
-                while (retryCount <= 4) {
+                while (retryCount <= 1) {
                     const bidResponse = await placeBid({
                         bidderAccessToken: token,
                         bidAmount,
@@ -201,6 +203,7 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                             notificationTitle: `Auto Bid Done from ${bidderName}`,
                             notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bidded from ${bidderName}`
                         });
+                        alreadyBiddedCache.push(project?.id);
                         break;
                     } else if (bidResponse?.status === 409) {
                         break;
