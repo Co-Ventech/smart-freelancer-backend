@@ -60,11 +60,9 @@ router.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 router.get('/notifications', validateUser, getAllNotificationsController);
 router.post('/notifications/mark-read', validateUser, markNotificationReadController);
 router.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
-// app.post('/login', loginController);
+
 
 app.use('/api',router)
-
-
 
 // Define the cron schedule (e.g., runs every minute: '*/1 * * * *')
 // auto-bid

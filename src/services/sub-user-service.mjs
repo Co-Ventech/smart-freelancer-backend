@@ -25,7 +25,7 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
             created_at: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-    if (autobid_enabled) {
+    if (autobid_enabled === true) {
         await insertAutoBidCache({
             sub_user_access_token: hashedToken,
             sub_username,
