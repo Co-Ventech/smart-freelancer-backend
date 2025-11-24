@@ -112,3 +112,19 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
     }
 
 }
+
+export async function checkExistingBidAPI(projectId, userId, token) {
+    try {
+        const res = await axios.get(
+            `https://www.freelancer.com/api/projects/0.1/bids/?project_ids[]=${projectId}&user_id=${userId}`,
+            {
+                headers: { "Freelancer-Api-Key": token }
+            }
+        );
+
+        return res.data.result?.bids?.length > 0;
+    } catch {
+        return false;
+    }
+}
+

@@ -2,7 +2,7 @@ import db from "../../config/firebase-config.mjs"
 import { v4 } from 'uuid'
 import { scoreJob } from "../freelancer/freelancer_kpi_scorer.mjs";
 import { generateAIProposal } from "../openai/proposalGenerator.mjs";
-import { placeBid } from "./freelancer-service.mjs";
+import { checkExistingBidAPI, placeBid } from "./freelancer-service.mjs";
 import { calculateBidAmount } from "../utils/calculate-bid-amount.mjs";
 import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
@@ -152,57 +152,66 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
     for (const project of projectsToBid) {
-        if ((autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || (project.type === autobid_type)) && alreadyBiddedCache?.filter((val) => val.project_id === project?.id && val.sub_user_doc_id === sub_user_doc_id)?.length === 0) {
+
+        const isAlreadyCached = alreadyBiddedCache.some(
+            (val) => val.project_id === project.id && val.sub_user_doc_id === sub_user_doc_id
+        );
+
+        if (
+            (autobid_type === AUTOBID_FOR_JOB_TYPE.ALL || project.type === autobid_type) &&
+            !isAlreadyCached
+        ) {
             try {
                 const bidAmount = calculateBidAmount(project);
-                // Skip projects that do not meet the criteria
                 if (bidAmount === null) {
-                    return {
-                        status: 200,
-                        message: `Skipping project ${project.id} due to bid criteria.`
-                    }
+                    continue;
                 }
 
+                // -------------------------------
+                // CHECK FROM FREELANCER API
+                // -------------------------------
+                const existingBidded = await checkExistingBidAPI(project.id, bidderId, token);
+                if (existingBidded === true) {
+                    console.log(`Already bidded from Freelancer API. Skipping project ${project.id}`);
+                    alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
+                    continue;
+                }
                 const ownerId = project.owner_id || project.owner?.id || project.user_id || null;
                 const clientName = clients[String(ownerId)]?.public_name;
 
-                const proposalResponse = autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED ?
-                    await generateAIProposal(clientName, project?.title, project?.description, bidderName) : null;
-                let proposal = null;
+                const proposalResponse =
+                    autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED
+                        ? await generateAIProposal(clientName, project.title, project.description, bidderName)
+                        : null;
 
-                if (!proposalResponse || proposalResponse?.status !== 200) {
-                    proposal = updateGeneralProposal(clientName, general_proposal);
-                } else {
-                    if (proposalResponse?.status === 200) {
-                        proposal = proposalResponse?.data;
-                    } else {
-                        return {
-                            status: proposalResponse?.status,
-                            message: proposalResponse?.message
-                        }
-                    }
-                }
+                const proposal =
+                    !proposalResponse || proposalResponse.status !== 200
+                        ? updateGeneralProposal(clientName, general_proposal)
+                        : proposalResponse.data;
 
-                console.log(`Proposal generated for project ${project.id}:`, proposal);
-                console.log(`Placing bid for project ${project.id} with amount ${bidAmount}...`);
+                console.log(`Placing bid for project ${project.id}`);
 
+                // ------------------------------------
+                // BIDDING LOOP (Safe - Max 1 retry)
+                // ------------------------------------
                 let retryCount = 0;
+                let hasAlreadyBidded = false;
 
-                while (retryCount <= 1) {
+                while (!hasAlreadyBidded) {
                     const bidResponse = await placeBid({
                         bidderAccessToken: token,
                         bidAmount,
                         bidderId,
                         proposal,
-                        projectTitle: project?.title,
-                        projectId: project?.id,
+                        projectTitle: project.title,
+                        projectId: project.id,
                         bidderName,
                     });
 
+                    // SUCCESS → Save + Exit
                     if (bidResponse.status === 200) {
-                        console.log(`Bid placed successfully for project ${project.id}`);
+                        console.log(`Bid placed successfully for ${project.id}`);
 
-                        // Save bid history
                         await saveBidService({
                             bidder_type: "auto",
                             bidder_id: bidderId,
@@ -212,10 +221,10 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                             type: project.type,
                             project_id: project.id,
                             projectDescription: project.description,
-                            budget: project?.budget,
+                            budget: project.budget,
                             amount: bidAmount,
                             period: 5,
-                            date: Date.now()
+                            date: Date.now(),
                         });
 
                         await createNotificationService({
@@ -223,24 +232,37 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                             subUserId: sub_user_doc_id,
                             projectId: project.id,
                             notificationTitle: `Auto Bid Done from ${bidderName}`,
-                            notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bidded from ${bidderName}`
+                            notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bidded from ${bidderName}`,
                         });
-                        alreadyBiddedCache.push({
-                            sub_user_doc_id,
-                            project_id: project?.id
-                        });
+
+                        alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
+                        hasAlreadyBidded = true;
                         break;
-                    } else if (bidResponse?.status === 409) {
+                    }
+
+                    // DUPLICATE BID (409) → NO CREDIT USED
+                    if (bidResponse.status === 409) {
+                        console.log(`Duplicate bid detected (409): ${project.id}`);
+                        hasAlreadyBidded = true;
+                        alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
                         break;
-                    } else {
-                        retryCount++;
+                    }
+
+                    // OTHER ERRORS → Retry only ONCE
+                    retryCount++;
+                    if (retryCount > 1) {
+                        console.log(`Stopping retries for project ${project.id}`);
+
                         await createNotificationService({
                             isSuccess: false,
                             subUserId: sub_user_doc_id,
                             projectId: project.id,
                             notificationTitle: `Auto Bid Failed from ${bidderName}`,
-                            notificationDescription: `Project #${project.id} - ${project.title} has been Auto-Bid Failed due to ${bidResponse?.message}`
-                        })
+                            notificationDescription: `Auto-Bid failed because: ${bidResponse.message}`,
+                        });
+
+                        hasAlreadyBidded = true; // Prevent infinite loop
+                        break;
                     }
                 }
             } catch (err) {
@@ -248,5 +270,6 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
             }
         }
     }
-}
+};
+
 
