@@ -52,12 +52,11 @@ export const fetchProjectsOfUserService = async (skillIds, sub_user_access_token
     }
 }
 
-export const fetchUserSkillsService = async (userId) => {
+export const fetchUserSkillsService = async (userBidId) => {
     const response = await api.get(
-        `/ajax-api/skills/top-skills.php?limit=9999&userId=${userId}&compact=true`
+        `/ajax-api/skills/top-skills.php?limit=9999&userId=${userBidId}&compact=true`
     );
-    const skills = response.data?.result?.topSkills?.map((skill) => skill.id) || [];
-    return (skills)
+    return (response.data?.result?.topSkills)
 }
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {

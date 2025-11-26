@@ -1,6 +1,6 @@
 import db from "../../config/firebase-config.mjs"
 import { v4 } from "uuid";
-import { fetchUserBidId } from "./freelancer-service.mjs";
+import { fetchUserBidId, fetchUserSkillsService } from "./freelancer-service.mjs";
 import { decrypt, encrypt } from "../utils/crypto.mjs";
 import admin from "firebase-admin";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
@@ -13,6 +13,11 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
     const generatedUUID = v4();
     const hashedToken = encrypt(sub_user_access_token);
     const userBidId = await fetchUserBidId(sub_user_access_token);
+    const userSkills= await fetchUserSkillsService(userBidId)?.map(skills=>({
+        id: skills.id,
+        name: skills.name,
+        template: ""
+    }));
     await subUserCollection.doc(generatedUUID)
         .set({
             parent_uid,
@@ -20,6 +25,7 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
             sub_username,
             autobid_enabled,
             user_bid_id: userBidId,
+            skills: userSkills,
             general_proposal,
             autobid_enabled_for_job_type,
             created_at: admin.firestore.FieldValue.serverTimestamp(),
@@ -31,6 +37,7 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
             sub_username,
             autobid_enabled,
             user_bid_id: userBidId,
+            skills: userSkills,
             general_proposal,
             autobid_enabled_for_job_type,
             document_id: generatedUUID

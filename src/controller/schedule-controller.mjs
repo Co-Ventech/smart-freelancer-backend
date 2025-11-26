@@ -9,8 +9,9 @@ export const scheduleAutoBidController = async () => {
     if (autoBidEnabledUsers?.status === 200 && autoBidEnabledUsers.data?.length > 0) {
         // fetch user's skills 
         await Promise.allSettled(autoBidEnabledUsers?.data?.map(async (user) => {
-            const skills = await fetchUserSkillsService(user?.user_bid_id);
-            const projects = await fetchProjectsOfUserService(skills, user?.sub_user_access_token);
+            // const skills = await fetchUserSkillsService(user?.user_bid_id);
+            const userSkills = user?.skills?.map((skill) => skill?.id) || [];
+            const projects = await fetchProjectsOfUserService(userSkills, user?.sub_user_access_token);
             const autoBidResponse = await autoBidService({
                 clients: projects?.users,
                 sub_user_doc_id: user?.document_id,

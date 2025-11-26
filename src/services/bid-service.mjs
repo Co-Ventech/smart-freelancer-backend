@@ -248,6 +248,13 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                         break;
                     }
 
+                    if (bidResponse.status === 403) {
+                        console.log(`You must be a verified freelancer: ${project.id}`);
+                        hasAlreadyBidded = true;
+                        alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
+                        break;
+                    }
+
                     // OTHER ERRORS → Retry only ONCE
                     retryCount++;
                     if (retryCount > 1) {
