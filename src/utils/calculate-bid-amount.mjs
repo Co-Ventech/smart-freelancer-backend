@@ -2,7 +2,7 @@ export const calculateBidAmount = (project) => {
     const { type, budget } = project;
 
     if (!budget || !budget.minimum || !budget.maximum) {
-        console.log(`Project ${project.id} has an invalid budget.`);
+        console.log(`Project ${project.id} has an invalid budget: ${budget.minimum +" "+ budget.maximum}`);
         return null;
     }
 

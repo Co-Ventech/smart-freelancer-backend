@@ -60,7 +60,6 @@ export const fetchUserSkillsService = async (userBidId) => {
 }
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
-    console.log(projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle);
     try {
 
         const bidResponse = await api.post(
@@ -80,6 +79,8 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
                 },
             }
         );
+
+        console.log("Bid Response: ", bidResponse)
 
         if (bidResponse.status === 200) {
             return {

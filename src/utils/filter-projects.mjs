@@ -1,8 +1,11 @@
+import dayjs from "dayjs";
 import { calculateBidAmount } from "./calculate-bid-amount.mjs";
 import { getOwnerCountry, isExcludedCountry } from "./get-owner-country.mjs";
+import { isProjectNew } from "./project-time-threshold.mjs";
 
 export const filterProjects = (resProjects, resUsers) => {
     const MIN_EMPLOYER_RATING = 4; // default: 4 (4+)
+    const date= dayjs();
 
     // Filter projects based on the conditions
     const projects = resProjects.filter((project) => {
@@ -49,8 +52,9 @@ export const filterProjects = (resProjects, resUsers) => {
             return false;
         }
 
-        const isRecent = nowUnix - project.submitdate <= 60; // Projects less than 1 minute old
-        if (!isRecent) {
+        // const isRecent = nowUnix - project.submitdate <= 60; // Projects less than 1 minute old
+        const isRecent= isProjectNew(project.submitdate, nowUnix);
+        if (isRecent===false) {
             console.log(`Project ${project.id} is not recent. Skipping.`);
             return false;
         }
