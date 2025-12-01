@@ -42,7 +42,5 @@ export const isExcludedCountry = (countryName) => {
 export const getAllowedCountries = (excludedCountries) => {
     const excludedAlpha2 = countries
         .filter(country => !excludedCountries?.includes(country.label))
-
-    console.log(excludedAlpha2)
     return excludedAlpha2?.map(c => c.code?.toLocaleLowerCase());
 }

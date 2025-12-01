@@ -61,7 +61,7 @@ export const fetchUserSkillsService = async (userBidId) => {
 }
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
-    try {
+    //try {
 
         const bidResponse = await api.post(
             `/api/projects/0.1/bids/`,
@@ -105,12 +105,13 @@ export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidde
             }
         }
 
-    } catch (e) {
-        return {
-            status: 500,
-            message: e.message
-        }
-    }
+    //} 
+    // catch (e) {
+    //     return {
+    //         status: 500,
+    //         message: e.message
+    //     }
+    // }
 
 }
 

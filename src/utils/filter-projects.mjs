@@ -1,12 +1,8 @@
-import dayjs from "dayjs";
 import { calculateBidAmount } from "./calculate-bid-amount.mjs";
-import { getOwnerCountry, isExcludedCountry } from "./get-owner-country.mjs";
 import { isProjectNew } from "./project-time-threshold.mjs";
 
 export const filterProjects = (resProjects, resUsers) => {
     const MIN_EMPLOYER_RATING = 4; // default: 4 (4+)
-    const date= dayjs();
-
     // Filter projects based on the conditions
     const projects = resProjects.filter((project) => {
         const { currency, budget, NDA, title } = project;

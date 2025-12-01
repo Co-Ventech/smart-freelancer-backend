@@ -5,7 +5,7 @@ import { decrypt, encrypt } from "../utils/crypto.mjs";
 import admin from "firebase-admin";
 import { AUTOBID_FOR_JOB_TYPE } from "../constants/auto-bid-for-job-type.mjs";
 import { AUTOBID_PROPOSAL_TYPE } from "../constants/auto-bid-proposal-type.mjs";
-import { deleteAutoBidUserCache, getAllAutoBidUsersCache, insertAutoBidCache } from "../cache/auto-bid-users.mjs";
+import { deleteAutoBidUserCache, getAllAutoBidUsersCache, insertAutoBidCache, updateAutoBidUserCache } from "../cache/auto-bid-users.mjs";
 
 const subUserCollection = db.collection('sub-user')
 
@@ -131,7 +131,7 @@ export const updateSubUserService = async (sub_user_id, body) => {
             const updatedData = { sub_user_id, ...updatedDoc.data(), document_id: sub_user_id };
 
             // now update your cache
-            await insertAutoBidCache(updatedData);
+            await updateAutoBidUserCache(updatedData);
         }
         return {
             status: 200,
