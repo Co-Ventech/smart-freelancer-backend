@@ -1,17 +1,18 @@
 import { autoBidService } from "../services/bid-service.mjs";
 import { fetchProjectsOfUserService, fetchUserSkillsService } from "../services/freelancer-service.mjs";
 import { getAutoBidSubUsersService } from "../services/sub-user-service.mjs";
+import { getAllowedCountries } from "../utils/get-owner-country.mjs";
 
 export const scheduleAutoBidController = async () => {
     console.log("task executing.....");
     const autoBidEnabledUsers = getAutoBidSubUsersService();
-    console.log(autoBidEnabledUsers);
     if (autoBidEnabledUsers?.status === 200 && autoBidEnabledUsers.data?.length > 0) {
         // fetch user's skills 
         await Promise.allSettled(autoBidEnabledUsers?.data?.map(async (user) => {
             // const skills = await fetchUserSkillsService(user?.user_bid_id);
             const userSkills = user?.skills?.map((skill) => skill?.id) || [];
-            const projects = await fetchProjectsOfUserService(userSkills, user?.sub_user_access_token);
+            const allowedCountries= getAllowedCountries(user?.project_filters?.excluded_countries);
+            const projects = await fetchProjectsOfUserService(userSkills, allowedCountries, user?.sub_user_access_token);
             const autoBidResponse = await autoBidService({
                 clients: projects?.users,
                 sub_user_doc_id: user?.document_id,

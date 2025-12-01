@@ -239,21 +239,21 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                     });
 
                     alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
-                    hasAlreadyBidded = true;
+                    // hasAlreadyBidded = true;
                     break;
                 }
 
                 // DUPLICATE BID (409) → NO CREDIT USED
                 if (bidResponse.status === 409) {
                     console.log(`Duplicate bid detected (409): ${project.id}`);
-                    hasAlreadyBidded = true;
+                    // hasAlreadyBidded = true;
                     alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
                     break;
                 }
 
                 if (bidResponse.status === 403) {
                     console.log(`You must be a verified freelancer: ${project.id}`);
-                    hasAlreadyBidded = true;
+                    // hasAlreadyBidded = true;
                     alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
                     break;
                 }

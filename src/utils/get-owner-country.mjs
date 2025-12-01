@@ -1,3 +1,5 @@
+import { countries } from "countries-ts";
+
 const EXCLUDED_COUNTRIES = [
     'pakistan',
     'india',
@@ -36,3 +38,11 @@ export const isExcludedCountry = (countryName) => {
     const n = normalize(countryName);
     return EXCLUDED_COUNTRIES.some((c) => n.includes(c) || c.includes(n));
 };
+
+export const getAllowedCountries = (excludedCountries) => {
+    const excludedAlpha2 = countries
+        .filter(country => !excludedCountries?.includes(country.label))
+
+    console.log(excludedAlpha2)
+    return excludedAlpha2?.map(c => c.code?.toLocaleLowerCase());
+}

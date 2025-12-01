@@ -13,11 +13,11 @@ export const filterProjects = (resProjects, resUsers) => {
         const nowUnix = Math.floor(Date.now() / 1000);
 
         // owner country exclusion
-        const ownerCountry = getOwnerCountry(project, resUsers);
-        if (isExcludedCountry(ownerCountry)) {
-            console.log(`Hiding project ${project.id} from UI - owner country: ${ownerCountry}`);
-            return false;
-        }
+        // const ownerCountry = getOwnerCountry(project, resUsers);
+        // if (isExcludedCountry(ownerCountry)) {
+        //     console.log(`Hiding project ${project.id} from UI - owner country: ${ownerCountry}`);
+        //     return false;
+        // }
         const ownerId = project.owner_id || project.owner?.id || project.user_id || null;
         // const isPaymentVerified = resUsers[String(ownerId)]?.status?.payment_verified === true;
         const clientRating = resUsers[String(ownerId)]?.employer_reputation?.entire_history?.overall;

@@ -16,12 +16,13 @@ export const fetchUserBidId = async (sub_user_access_token) => {
     return response.data?.result?.id || null;
 }
 
-export const fetchProjectsOfUserService = async (skillIds, sub_user_access_token) => {
+export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub_user_access_token) => {
     const from_time = getUnixTimestamp(60);
     try {
         const params = {
             'jobs[]': skillIds,
             from_time,
+            countries: allowedCountries,
             full_description: true,
             user_details: true, // Include user details
             user_responsiveness: true, // Include user responsiveness
