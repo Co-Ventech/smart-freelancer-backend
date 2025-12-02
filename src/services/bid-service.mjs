@@ -150,7 +150,8 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 
 
-export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
+export const autoBidService = async ({ clients, skills, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
+
     for (const project of projectsToBid) {
 
         const isAlreadyCached = alreadyBiddedCache.some(
@@ -186,7 +187,7 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
 
                 const proposal =
                     !proposalResponse || proposalResponse.status !== 200
-                        ? updateGeneralProposal(clientName, general_proposal)
+                        ? updateGeneralProposal(clientName, skills, project.title, project.description, general_proposal, bidderName)
                         : proposalResponse.data;
 
                 console.log(`Placing bid for project ${project.id} from ${bidderName}`);
@@ -209,7 +210,7 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                 });
 
 
-                console.log(bidResponse)
+                console.log(bidResponse.status)
 
                 // SUCCESS → Save + Exit
                 if (bidResponse.status === 200) {
@@ -241,36 +242,38 @@ export const autoBidService = async ({ clients, sub_user_doc_id, projectsToBid, 
                     alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
                     // hasAlreadyBidded = true;
                     break;
+                } else {
+
+                    if (bidResponse.status === 409) {
+                        console.log(`Duplicate bid detected (409): ${project.id}`);
+                        // hasAlreadyBidded = true;
+                        alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
+                        // break;
+                    }
+
+                    if (bidResponse.status === 403) {
+                        console.log(`You must be a verified freelancer: ${project.id}`);
+                        // hasAlreadyBidded = true;
+                        alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
+                        // break;
+                    }
+
+                    await createNotificationService({
+                        isSuccess: false,
+                        subUserId: sub_user_doc_id,
+                        projectId: project.id,
+                        notificationTitle: `Auto Bid Failed from ${bidderName}`,
+                        notificationDescription: `Auto-Bid failed because: ${bidResponse.message}`,
+                    });
+
                 }
 
                 // DUPLICATE BID (409) → NO CREDIT USED
-                if (bidResponse.status === 409) {
-                    console.log(`Duplicate bid detected (409): ${project.id}`);
-                    // hasAlreadyBidded = true;
-                    alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
-                    break;
-                }
-
-                if (bidResponse.status === 403) {
-                    console.log(`You must be a verified freelancer: ${project.id}`);
-                    // hasAlreadyBidded = true;
-                    alreadyBiddedCache.push({ sub_user_doc_id, project_id: project.id });
-                    break;
-                }
 
                 // OTHER ERRORS → Retry only ONCE
                 // retryCount++;
                 // if (retryCount > 1) {
                 // console.log(`Stopping retries for project ${project.id}`);
-
-                // await createNotificationService({
-                //     isSuccess: false,
-                //     subUserId: sub_user_doc_id,
-                //     projectId: project.id,
-                //     notificationTitle: `Auto Bid Failed from ${bidderName}`,
-                //     notificationDescription: `Auto-Bid failed because: ${bidResponse.message}`,
-                // });
-
                 // hasAlreadyBidded = true; // Prevent infinite loop
                 // break;
                 // }

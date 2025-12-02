@@ -11,10 +11,12 @@ export const scheduleAutoBidController = async () => {
         await Promise.allSettled(autoBidEnabledUsers?.data?.map(async (user) => {
             // const skills = await fetchUserSkillsService(user?.user_bid_id);
             const userSkills = user?.skills?.map((skill) => skill?.id) || [];
-            const allowedCountries= getAllowedCountries(user?.project_filters?.excluded_countries);
-            const projects = await fetchProjectsOfUserService(userSkills, allowedCountries, user?.sub_user_access_token);
+            const excludedCountries= user?.project_filters?.excluded_countries
+            const allowedCountries= getAllowedCountries(excludedCountries);
+            const projects = await fetchProjectsOfUserService(userSkills, allowedCountries, user?.sub_user_access_token, excludedCountries);
             const autoBidResponse = await autoBidService({
                 clients: projects?.users,
+                skills: user?.skills,
                 sub_user_doc_id: user?.document_id,
                 general_proposal: user?.general_proposal,
                 autobid_enabled_for_job_type: user?.autobid_enabled_for_job_type,

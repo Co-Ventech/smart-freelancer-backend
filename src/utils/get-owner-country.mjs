@@ -1,15 +1,15 @@
 import { countries } from "countries-ts";
 
-const EXCLUDED_COUNTRIES = [
-    'pakistan',
-    'india',
-    'bangladesh',
-    'indonesia',
-    'algeria',
-    'egypt',
-    'nepal',
-    'israel'
-];
+// const EXCLUDED_COUNTRIES = [
+//     'pakistan',
+//     'india',
+//     'bangladesh',
+//     'indonesia',
+//     'algeria',
+//     'egypt',
+//     'nepal',
+//     'israel'
+// ];
 
 export const getOwnerCountry = (project, usersMap = {}) => {
     const ownerId = project.owner_id ?? project.owner?.id ?? project.user_id ?? null;
@@ -33,10 +33,10 @@ export const getOwnerCountry = (project, usersMap = {}) => {
 
 const normalize = (s) => (s || '').toString().trim().toLowerCase();
 
-export const isExcludedCountry = (countryName) => {
+export const isExcludedCountry = (countryName, userExcludedCountries) => {
     if (!countryName) return false;
     const n = normalize(countryName);
-    return EXCLUDED_COUNTRIES.some((c) => n.includes(c) || c.includes(n));
+    return userExcludedCountries.some((c) => n?.toLowerCase().includes(c?.toLowerCase()) || c?.toLowerCase().includes(n?.toLowerCase()));
 };
 
 export const getAllowedCountries = (excludedCountries) => {

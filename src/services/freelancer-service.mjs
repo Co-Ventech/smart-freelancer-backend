@@ -16,7 +16,7 @@ export const fetchUserBidId = async (sub_user_access_token) => {
     return response.data?.result?.id || null;
 }
 
-export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub_user_access_token) => {
+export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub_user_access_token, excluded_countries) => {
     const from_time = getUnixTimestamp(60);
     try {
         const params = {
@@ -45,7 +45,7 @@ export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub
         // return both projects and users map (some endpoints include users in result)
         const resProjects = response.data?.result?.projects || [];
         const resUsers = response.data?.result?.users || {};
-        const filteredProjects = filterProjects(resProjects, resUsers);
+        const filteredProjects = filterProjects(resProjects, resUsers, excluded_countries);
         return { projects: filteredProjects, users: resUsers };
     } catch (err) {
         console.error('Error fetching projects by skills:', err);
@@ -63,47 +63,54 @@ export const fetchUserSkillsService = async (userBidId) => {
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
     //try {
 
-        const bidResponse = await api.post(
-            `/api/projects/0.1/bids/`,
-            {
-                project_id: projectId,
-                bidder_id: bidderId,
-                amount: bidAmount,
-                period: 5,
-                description: proposal,
-                milestone_percentage: 100,
+    const bidResponse = await api.post(
+        `/api/projects/0.1/bids/`,
+        {
+            project_id: projectId,
+            bidder_id: bidderId,
+            amount: bidAmount,
+            period: 5,
+            description: proposal,
+            milestone_percentage: 100,
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${bidderAccessToken}`,
+                'Content-Type': 'application/json'
             },
-            {
-                headers: {
-                    'Authorization': `Bearer ${bidderAccessToken}`,
-                    'Content-Type': 'application/json'
-                },
-            }
-        );
-
-        console.log("Bid Response: ", bidResponse)
-
-        if (bidResponse.status === 200) {
-            return {
-                status: 200,
-                message: `Auto Bid Done successfully for user ${bidderName} on Project: ${projectTitle}`,
-                data: bidResponse?.data
-            }
         }
+    );
 
-        if (bidResponse?.message == "Request failed with status code 409") {
-            return {
-                status: 409,
-                message: "You already have bidded on this project"
-            }
-        }
+    console.log("Bid Response: ", bidResponse.status)
 
-        if (bidResponse?.message == "Request failed with status code 403") {
-            return {
-                status: 403,
-                message: "You must be a verified freelancer to bid on this project"
-            }
+    if (bidResponse.status === 200) {
+        return {
+            status: 200,
+            message: `Auto Bid Done successfully for user ${bidderName} on Project: ${projectTitle}`,
+            data: bidResponse?.data
         }
+    }
+
+    if (bidResponse?.message == "Request failed with status code 409") {
+        return {
+            status: 409,
+            message: "You already have bidded on this project"
+        }
+    }
+
+    if (bidResponse?.message == "Request failed with status code 403") {
+        return {
+            status: 403,
+            message: "You must be a verified freelancer to bid on this project"
+        }
+    }
+
+    if (bidResponse?.message == "Request failed with status code 400") {
+        return {
+            status: 400,
+            message: "You appear to be bidding too fast. Please take the time to write a quality bid. Improve your trust score by getting Verified by Freelancer."
+        }
+    }
 
     //} 
     // catch (e) {

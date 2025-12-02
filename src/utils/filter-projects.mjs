@@ -1,7 +1,8 @@
 import { calculateBidAmount } from "./calculate-bid-amount.mjs";
+import { getOwnerCountry, isExcludedCountry } from "./get-owner-country.mjs";
 import { isProjectNew } from "./project-time-threshold.mjs";
 
-export const filterProjects = (resProjects, resUsers) => {
+export const filterProjects = (resProjects, resUsers, excluded_countries) => {
     const MIN_EMPLOYER_RATING = 4; // default: 4 (4+)
     // Filter projects based on the conditions
     const projects = resProjects.filter((project) => {
@@ -9,11 +10,11 @@ export const filterProjects = (resProjects, resUsers) => {
         const nowUnix = Math.floor(Date.now() / 1000);
 
         // owner country exclusion
-        // const ownerCountry = getOwnerCountry(project, resUsers);
-        // if (isExcludedCountry(ownerCountry)) {
-        //     console.log(`Hiding project ${project.id} from UI - owner country: ${ownerCountry}`);
-        //     return false;
-        // }
+        const ownerCountry = getOwnerCountry(project, resUsers);
+        if (isExcludedCountry(ownerCountry,excluded_countries)) {
+            console.log(`Hiding project ${project.id} from UI - owner country: ${ownerCountry}`);
+            return false;
+        }
         const ownerId = project.owner_id || project.owner?.id || project.user_id || null;
         // const isPaymentVerified = resUsers[String(ownerId)]?.status?.payment_verified === true;
         const clientRating = resUsers[String(ownerId)]?.employer_reputation?.entire_history?.overall;

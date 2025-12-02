@@ -10,6 +10,7 @@ import { getAllNotificationsController, markNotificationReadController } from ".
 import { validateAdminUser, validateUser, verifyTokenFromFirebase } from "./src/middleware/auth-middleware.mjs";
 import { createAccessTokenController } from "./src/controller/token-controller.mjs";
 import { getAllUsersController } from "./src/controller/user-controller.mjs";
+import { recommendProposalController } from "./src/controller/proposal-controller.mjs";
 
 dotenv.config();
 
@@ -60,6 +61,7 @@ router.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 router.get('/notifications', validateUser, getAllNotificationsController);
 router.post('/notifications/mark-read', validateUser, markNotificationReadController);
 router.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
+router.post('/recommend-proposal', validateUser, recommendProposalController)
 
 
 app.use('/api',router)
