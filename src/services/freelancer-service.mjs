@@ -63,66 +63,41 @@ export const fetchUserSkillsService = async (userBidId) => {
 }
 
 export const placeBid = async ({ projectId, bidderId, bidAmount, proposal, bidderAccessToken, bidderName, projectTitle }) => {
-    //try {
-
-    const bidResponse = await api.post(
-        `/api/projects/0.1/bids/`,
-        {
-            project_id: projectId,
-            bidder_id: bidderId,
-            amount: bidAmount,
-            period: 5,
-            description: proposal,
-            milestone_percentage: 100,
-        },
-        {
-            headers: {
-                'Authorization': `Bearer ${bidderAccessToken}`,
-                'Content-Type': 'application/json'
+    try {
+        const bidResponse = await api.post(
+            `/api/projects/0.1/bids/`,
+            {
+                project_id: projectId,
+                bidder_id: bidderId,
+                amount: bidAmount,
+                period: 5,
+                description: proposal,
+                milestone_percentage: 100,
             },
-        }
-    );
+            {
+                headers: {
+                    Authorization: `Bearer ${bidderAccessToken}`,
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
 
-    console.log("Bid Response: ", bidResponse.status)
-
-    if (bidResponse.status === 200) {
         return {
             status: 200,
             message: `Auto Bid Done successfully for user ${bidderName} on Project: ${projectTitle}`,
-            data: bidResponse?.data
-        }
+            data: bidResponse.data
+        };
+    } catch (e) {
+        const code = e?.response?.status;
+
+        if (code === 409) return { status: 409, message: "You already have bidded on this project" };
+        if (code === 403) return { status: 403, message: "You must be a verified freelancer to bid on this project" };
+        if (code === 400) return { status: 400, message: "You are bidding too fast" };
+
+        return { status: 500, message: e.message };
     }
+};
 
-    if (bidResponse?.message == "Request failed with status code 409") {
-        return {
-            status: 409,
-            message: "You already have bidded on this project"
-        }
-    }
-
-    if (bidResponse?.message == "Request failed with status code 403") {
-        return {
-            status: 403,
-            message: "You must be a verified freelancer to bid on this project"
-        }
-    }
-
-    if (bidResponse?.message == "Request failed with status code 400") {
-        return {
-            status: 400,
-            message: "You appear to be bidding too fast. Please take the time to write a quality bid. Improve your trust score by getting Verified by Freelancer."
-        }
-    }
-
-    //} 
-    // catch (e) {
-    //     return {
-    //         status: 500,
-    //         message: e.message
-    //     }
-    // }
-
-}
 
 export async function checkExistingBidAPI(projectId, userId, token) {
     try {
