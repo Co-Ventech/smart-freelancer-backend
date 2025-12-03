@@ -37,10 +37,9 @@ export const placeBidController = async (req, res) => {
         bidderName,
     });
     if (result.status == 200) {
-        console.log(`Bid placed successfully for project ${projectId}`);
 
         // Save bid history
-        const result= await saveBidService({
+        const savedBid = await saveBidService({
             bidder_type: "manual",
             bidder_id: bidderId,
             description: proposal,
@@ -55,7 +54,7 @@ export const placeBidController = async (req, res) => {
             date: Date.now()
         });
 
-        res.status(result?.status).send({...result})
+        res.status(savedBid?.status).send({...savedBid})
 
         // await createNotificationService({
         //     isSuccess: true,
