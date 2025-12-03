@@ -1,15 +1,4 @@
-import { countries } from "countries-ts";
-
-// const EXCLUDED_COUNTRIES = [
-//     'pakistan',
-//     'india',
-//     'bangladesh',
-//     'indonesia',
-//     'algeria',
-//     'egypt',
-//     'nepal',
-//     'israel'
-// ];
+import { countries } from "countries-ts"
 
 export const getOwnerCountry = (project, usersMap = {}) => {
     const ownerId = project.owner_id ?? project.owner?.id ?? project.user_id ?? null;
