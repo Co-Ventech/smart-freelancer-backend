@@ -13,8 +13,8 @@ export const createSubUserService = async ({ parent_uid, sub_user_access_token, 
     const generatedUUID = v4();
     const hashedToken = encrypt(sub_user_access_token);
     const userBidId = await fetchUserBidId(sub_user_access_token);
-    const userSkills = await fetchUserSkillsService(userBidId)
-    const mappedSkills = userSkills.map(skill => ({
+    const userSkills= await fetchUserSkillsService(userBidId)
+    const mappedSkills = userSkills.map(skill=>({
         id: skill.id,
         name: skill.name,
         template: ""

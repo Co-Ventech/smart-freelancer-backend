@@ -56,7 +56,9 @@ export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub
 export const fetchUserSkillsService = async (userBidId) => {
     const response = await api.get(
         `/ajax-api/skills/top-skills.php?limit=9999&userId=${userBidId}&compact=true`
+
     );
+    console.log("Skills Response: ", response.data?.result?.topSkills)
     return (response.data?.result?.topSkills)
 }
 
