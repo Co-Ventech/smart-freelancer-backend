@@ -40,12 +40,12 @@ export function scoreSkills(skills, jobTitle, jobDescription) {
 
 export function filterStrongSkills(scoredSkills, threshold = 6) {
     return scoredSkills
-        .filter(s => s.score >= threshold)
-        .map(s => s.name);
+        ?.filter(s => s.score >= threshold)
+        ?.map(s => s.name);
 }
 
 export function generateProposal(clientName, skills, template, bidderName) {
-    const skillsText = skills.length ? skills.join(", ") : "the required technologies";
+    const skillsText = skills?.length ? skills.join(", ") : "the required technologies";
 
     return template
         .replace("{{client_name}}", clientName)

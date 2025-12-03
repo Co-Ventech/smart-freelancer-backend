@@ -11,15 +11,17 @@ export const scheduleAutoBidController = async () => {
         await Promise.allSettled(autoBidEnabledUsers?.data?.map(async (user) => {
             // const skills = await fetchUserSkillsService(user?.user_bid_id);
             const userSkills = user?.skills?.map((skill) => skill?.id) || [];
-            const excludedCountries = user?.project_filters?.excluded_countries
+            const excludedCountries = user?.project_filters?.excluded_countries;
+
             const allowedCountries = getAllowedCountries(excludedCountries);
             const projects = await fetchProjectsOfUserService(userSkills, allowedCountries, user?.sub_user_access_token, excludedCountries);
-            const newProposal = user?.templates?.sort((a, b) => a.order - b.order)?.filter(a => a.alwaysInclude)?.reduce((prev, curr) => prev + curr.content, "");
+            // const newProposal = user?.templates?.sort((a, b) => a.order - b.order)?.filter(a => a?.alwaysInclude===false)?.reduce((prev, curr) => prev + curr.content, "");
+            
             const autoBidResponse = await autoBidService({
                 clients: projects?.users,
                 skills: user?.skills,
                 sub_user_doc_id: user?.document_id,
-                general_proposal: newProposal,
+                general_proposal: user?.general_proposal,
                 autobid_enabled_for_job_type: user?.autobid_enabled_for_job_type,
                 autobid_proposal_type: user?.autobid_proposal_type,
                 projectsToBid: projects.projects,

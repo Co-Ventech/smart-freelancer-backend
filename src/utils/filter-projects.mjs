@@ -44,6 +44,7 @@ export const filterProjects = (resProjects, resUsers, excluded_countries) => {
         }
 
         const bidCount = project.bid_stats?.bid_count || 0;
+        console.log(bidCount);
         if (bidCount >= 50) {
             console.log(`Project ${project.id} has 50 or more bids. Skipping.`);
             return false;

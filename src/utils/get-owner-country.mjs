@@ -25,7 +25,7 @@ const normalize = (s) => (s || '').toString().trim().toLowerCase();
 export const isExcludedCountry = (countryName, userExcludedCountries) => {
     if (!countryName) return false;
     const n = normalize(countryName);
-    return userExcludedCountries.some((c) => n?.toLowerCase().includes(c?.toLowerCase()) || c?.toLowerCase().includes(n?.toLowerCase()));
+    return userExcludedCountries?.some((c) => n?.toLowerCase().includes(c?.toLowerCase()) || c?.toLowerCase().includes(n?.toLowerCase()));
 };
 
 export const getAllowedCountries = (excludedCountries) => {
