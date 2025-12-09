@@ -1,5 +1,4 @@
 import { HttpStatusCode } from "axios";
-import { filterStrongSkills, generateProposal, scoreSkills } from "../services/skill-service.mjs";
 import { updateGeneralProposal } from "../utils/modify-general-proposal.mjs";
 
 export const recommendProposalController = (req, res) => {

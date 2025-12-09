@@ -16,6 +16,8 @@ const subUserCollection = db.collection('sub-user');
 
 const alreadyBiddedCache = [];
 
+const TIMEOUT_FOR_BIDDING=10000;
+
 
 export const saveBidService = async (body) => {
 

@@ -21,7 +21,7 @@ export const scheduleAutoBidController = async () => {
                 clients: projects?.users,
                 skills: user?.skills,
                 sub_user_doc_id: user?.document_id,
-                general_proposal: user?.general_proposal,
+                general_proposal: user?.templates,
                 autobid_enabled_for_job_type: user?.autobid_enabled_for_job_type,
                 autobid_proposal_type: user?.autobid_proposal_type,
                 projectsToBid: projects.projects,

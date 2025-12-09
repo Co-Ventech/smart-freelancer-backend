@@ -78,9 +78,9 @@ export function appendSkillsBasedOnJob(skills, jobTitle, jobDescription) {
 export function scoreSkills(skills, jobTitle, jobDescription) {
     const jobText = cleanText(jobTitle + " " + jobDescription);
 
-    return skills.map(skill => ({
+    return skills?.map(skill => ({
         ...skill,
-        score: Number((cosineSimilarity(cleanText(skill.name), jobText) * 10).toFixed(2))
+        score: Number((cosineSimilarity(cleanText(skill.name), jobText) * 100).toFixed(2))
     })).sort((a, b) => b.score - a.score);
 }
 
@@ -93,7 +93,7 @@ export function filterStrongSkills(scoredSkills, threshold = 5) {
 export function generateProposal(clientName, skills, template, bidderName) {
     const skillsText = skills.length ? skills.join(", ") : "the required skills";
     return template
-        .replace(/{{client_name}}/g, clientName)
-        .replace(/{{skills}}/g, skillsText)
-        .replace(/{{bidder_name}}/g, bidderName);
+        ?.replace(/{{client_name}}/g, clientName)
+        ?.replace(/{{skills}}/g, skillsText)
+        ?.replace(/{{bidder_name}}/g, bidderName);
 }
