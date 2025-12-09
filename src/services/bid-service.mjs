@@ -16,7 +16,7 @@ const subUserCollection = db.collection('sub-user');
 
 const alreadyBiddedCache = [];
 
-const TIMEOUT_FOR_BIDDING=10000;
+const TIMEOUT_FOR_BIDDING = 10000;
 
 
 export const saveBidService = async (body) => {
@@ -193,7 +193,6 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
                         : proposalResponse.data;
 
                 console.log(`Placing bid for project ${project.id} from ${bidderName}`);
-
                 // ------------------------------------
                 // BIDDING LOOP (Safe - Max 1 retry)
                 // ------------------------------------

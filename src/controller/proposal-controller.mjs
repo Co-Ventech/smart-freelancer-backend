@@ -5,8 +5,7 @@ export const recommendProposalController = (req, res) => {
     const { proposal, job_title, job_description, skills, client_name, bidder_name } = req?.body;
 
     // 3. Generate proposal
-    const newProposal = proposal?.sort((a, b) => a.order - b.order)?.filter(a => a.alwaysInclude)?.reduce((prev, curr) => prev + curr.content, "");
-    const finalProposal = updateGeneralProposal(client_name, skills, job_title, job_description, newProposal, bidder_name);
+    const finalProposal = updateGeneralProposal(client_name, skills, job_title, job_description, proposal, bidder_name);
 
     res.status(HttpStatusCode.Ok).send({
         status: HttpStatusCode.Ok,

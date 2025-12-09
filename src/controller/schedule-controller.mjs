@@ -15,8 +15,6 @@ export const scheduleAutoBidController = async () => {
 
             const allowedCountries = getAllowedCountries(excludedCountries);
             const projects = await fetchProjectsOfUserService(userSkills, allowedCountries, user?.sub_user_access_token, excludedCountries);
-            // const newProposal = user?.templates?.sort((a, b) => a.order - b.order)?.filter(a => a?.alwaysInclude===false)?.reduce((prev, curr) => prev + curr.content, "");
-            
             const autoBidResponse = await autoBidService({
                 clients: projects?.users,
                 skills: user?.skills,

@@ -92,7 +92,9 @@ export function filterStrongSkills(scoredSkills, threshold = 5) {
 // Proposal generation
 export function generateProposal(clientName, skills, template, bidderName) {
     const skillsText = skills.length ? skills.join(", ") : "the required skills";
-    return template
+    // const concatenatedTemplate = template?.reduce((prev, curr) => prev + curr.content, "");
+    const newProposal = template?.sort((a, b) => a.order - b.order)?.filter(a => a.alwaysInclude)?.reduce((prev, curr) => prev + curr.content + "\n", "");
+    return newProposal
         ?.replace(/{{client_name}}/g, clientName)
         ?.replace(/{{skills}}/g, skillsText)
         ?.replace(/{{bidder_name}}/g, bidderName);
