@@ -200,15 +200,20 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
                 // let hasAlreadyBidded = false;
 
                 // while (!hasAlreadyBidded) {
-                const bidResponse = await placeBid({
-                    bidderAccessToken: token,
-                    bidAmount,
-                    bidderId,
-                    proposal,
-                    projectTitle: project.title,
-                    projectId: project.id,
-                    bidderName,
-                });
+                let bidResponse = null;
+                setTimeout(() => {
+                     placeBid({
+                        bidderAccessToken: token,
+                        bidAmount,
+                        bidderId,
+                        proposal,
+                        projectTitle: project.title,
+                        projectId: project.id,
+                        bidderName,
+                    }).then(val=>{
+                        bidResponse= val;
+                    });
+                }, TIMEOUT_FOR_BIDDING)
 
 
                 console.log(bidResponse.status)
