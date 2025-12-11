@@ -18,6 +18,19 @@ const alreadyBiddedCache = [];
 
 const TIMEOUT_FOR_BIDDING = 10000;
 
+async function delayedBid(delay) {
+    await new Promise(r => setTimeout(r, delay));
+    return placeBid({
+        bidderAccessToken: token,
+        bidAmount,
+        bidderId,
+        proposal,
+        projectTitle: project.title,
+        projectId: project.id,
+        bidderName,
+    });
+}
+
 
 export const saveBidService = async (body) => {
 
@@ -199,24 +212,9 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
                 // let retryCount = 0;
                 // let hasAlreadyBidded = false;
 
-                // while (!hasAlreadyBidded) {
-                let bidResponse = null;
-                setTimeout(() => {
-                     placeBid({
-                        bidderAccessToken: token,
-                        bidAmount,
-                        bidderId,
-                        proposal,
-                        projectTitle: project.title,
-                        projectId: project.id,
-                        bidderName,
-                    }).then(val=>{
-                        bidResponse= val;
-                    });
-                }, TIMEOUT_FOR_BIDDING)
-
-
-                console.log(bidResponse.status)
+                // while (!hasAlreadyBidded);
+                const bidResponse = await delayedBid(TIMEOUT_FOR_BIDDING);
+                console.log(bidResponse.status);
 
                 // SUCCESS → Save + Exit
                 if (bidResponse.status === 200) {
@@ -290,5 +288,3 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
         }
     }
 };
-
-
