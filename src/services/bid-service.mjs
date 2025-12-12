@@ -18,7 +18,7 @@ const alreadyBiddedCache = [];
 
 const TIMEOUT_FOR_BIDDING = 10000;
 
-async function delayedBid(delay) {
+async function delayedBid(delay, token, bidAmount, bidderId, proposal, project, bidderName) {
     await new Promise(r => setTimeout(r, delay));
     return placeBid({
         bidderAccessToken: token,
@@ -213,7 +213,7 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
                 // let hasAlreadyBidded = false;
 
                 // while (!hasAlreadyBidded);
-                const bidResponse = await delayedBid(TIMEOUT_FOR_BIDDING);
+                const bidResponse = await delayedBid(TIMEOUT_FOR_BIDDING, token, bidAmount, bidderId, proposal, project, bidderName);
                 console.log(bidResponse.status);
 
                 // SUCCESS → Save + Exit
