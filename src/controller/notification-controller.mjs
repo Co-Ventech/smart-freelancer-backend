@@ -1,4 +1,4 @@
-import { getAllNotificationService, markNotificationRead } from "../services/notification-service.mjs";
+import { getAllNotificationService, markNotificationRead,createNotificationService,getNotificationDetailsService } from "../services/notification-service.mjs";
 
 export const getAllNotificationsController = async (req, res) => {
     const { sub_user_id, count  } = req.query;
@@ -18,4 +18,13 @@ export const markNotificationReadController = async(req, res) => {
         message: "Notifications marked successfully",
         data
     });
+}
+
+export const getNotificationDetailsController = async (req, res) => {
+    const { sub_user_id, notification_id, project_id } = req.query;
+    const resp = await getNotificationDetailsService({ subUserId: sub_user_id, notificationId: notification_id, projectId: project_id });
+    if (resp.status === 200) {
+        return res.status(200).send({ status: 200, message: "Project details fetched", data: resp.data });
+    }
+    return res.status(resp.status || 500).send({ status: resp.status || 500, message: resp.message || "Error fetching details" });
 }

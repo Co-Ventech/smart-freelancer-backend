@@ -17,9 +17,9 @@ export const scheduleAutoBidController = async () => {
             const projects = await fetchProjectsOfUserService(userSkills, allowedCountries, user?.sub_user_access_token, excludedCountries);
             const autoBidResponse = await autoBidService({
                 clients: projects?.users,
-                skills: user?.skills,
+                skills: user?.skills || [],
                 sub_user_doc_id: user?.document_id,
-                general_proposal: user?.templates,
+                general_proposal: user?.templates || user?.general_proposal,
                 autobid_enabled_for_job_type: user?.autobid_enabled_for_job_type,
                 autobid_proposal_type: user?.autobid_proposal_type,
                 projectsToBid: projects.projects,

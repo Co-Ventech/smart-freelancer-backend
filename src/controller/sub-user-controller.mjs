@@ -25,7 +25,7 @@ export const createSubUser = async (req, res) => {
 
 export const getSubUsers = async (req, res) => {
     const result = await getSubUsersService({
-        uid: req?.query?.uid
+        uid: req?.query?.parent_uid
     });
 
     res.status(result.status).send({

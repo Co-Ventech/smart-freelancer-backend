@@ -6,7 +6,7 @@ import cors from "cors";
 import { createSubUser, deleteSubuserController, getSubUsers, updateSubUserController } from "./src/controller/sub-user-controller.mjs";
 import nodeCron from "node-cron";
 import { scheduleAutoBidController } from "./src/controller/schedule-controller.mjs";
-import { getAllNotificationsController, markNotificationReadController } from "./src/controller/notification-controller.mjs";
+import { getAllNotificationsController, markNotificationReadController,getNotificationDetailsController } from "./src/controller/notification-controller.mjs";
 import { validateAdminUser, validateUser, verifyTokenFromFirebase } from "./src/middleware/auth-middleware.mjs";
 import { createAccessTokenController } from "./src/controller/token-controller.mjs";
 import { getAllUsersController } from "./src/controller/user-controller.mjs";
@@ -61,7 +61,8 @@ router.post('/toggle-auto-bid', validateUser, toggleAutoBidController);
 router.get('/notifications', validateUser, getAllNotificationsController);
 router.post('/notifications/mark-read', validateUser, markNotificationReadController);
 router.post('/access-token', verifyTokenFromFirebase, createAccessTokenController);
-router.post('/recommend-proposal', validateUser, recommendProposalController)
+router.post('/recommend-proposal', validateUser, recommendProposalController);
+router.get('/notifications/details', validateUser, getNotificationDetailsController);
 
 
 app.use('/api',router)

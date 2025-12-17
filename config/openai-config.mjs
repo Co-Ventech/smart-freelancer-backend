@@ -6,3 +6,4 @@ dotenv.config();
 export const openai_client = new OpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
 }).chat.completions;
+  

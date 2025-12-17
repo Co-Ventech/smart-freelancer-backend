@@ -147,33 +147,77 @@ export const updateSubUserService = async (sub_user_id, body) => {
     }
 }
 
+// export const deleteSubUserService = async (sub_user_id, parent_uid) => {
+//     try {
+//         const snapshot = await subUserCollection.where("parent_uid", "==", parent_uid).where("sub_user_id", "==", sub_user_id).get();
+//         if (snapshot.empty) {
+//             console.log("No matching documents.");
+//             return {
+//                 status: 404,
+//                 message: "No Sub User found"
+//             }
+//         }
+//         // delete all matching docs
+//         const batch = db.batch();
+//         snapshot.forEach((doc) => {
+//             batch.delete(doc.ref);
+//         });
+//         await deleteAutoBidUserCache(sub_user_id)
+//         await batch.commit();
+
+//         return {
+//             status: 200,
+//             message: "Sub User Updated Successfully"
+//         }
+//     } catch (e) {
+//         console.log(e);
+//         return {
+//             status: 500,
+//             message: "Error: " + e.message
+//         }
+//     }
+// }
+
 export const deleteSubUserService = async (sub_user_id, parent_uid) => {
     try {
-        const snapshot = await subUserCollection.where("parent_uid", "==", parent_uid).where("sub_user_id", "==", sub_user_id).get();
-        if (snapshot.empty) {
-            console.log("No matching documents.");
+        console.log("DELETE INPUTS =>", { sub_user_id, parent_uid });
+
+        const docRef = subUserCollection.doc(sub_user_id);
+        const snapshot = await docRef.get();
+
+        // Check if document exists
+        if (!snapshot.exists) {
             return {
                 status: 404,
                 message: "No Sub User found"
-            }
+            };
         }
-        // delete all matching docs
-        const batch = db.batch();
-        snapshot.forEach((doc) => {
-            batch.delete(doc.ref);
-        });
-        await deleteAutoBidUserCache(sub_user_id)
-        await batch.commit();
+
+        // Check ownership
+        const data = snapshot.data();
+        if (data.parent_uid !== parent_uid) {
+            return {
+                status: 403,
+                message: "Unauthorized to delete this Sub User"
+            };
+        }
+
+        // Delete document
+        await docRef.delete();
+
+        // Clear cache
+        await deleteAutoBidUserCache(sub_user_id);
 
         return {
             status: 200,
-            message: "Sub User Updated Successfully"
-        }
+            message: "Sub User Deleted Successfully"
+        };
     } catch (e) {
-        console.log(e);
+        console.error("DELETE ERROR:", e);
+
         return {
             status: 500,
             message: "Error: " + e.message
-        }
+        };
     }
-}
+};

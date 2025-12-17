@@ -1,9 +1,9 @@
-import fs from "fs";
+  import fs from "fs";
 import path from "path";
 
 const CACHE_FILE = path.resolve("./src/cache/auto-bid-cache.json");
 
-// 🧠 Helper: read the JSON file
+
 const readCache = () => {
   try {
     if (!fs.existsSync(CACHE_FILE)) {
