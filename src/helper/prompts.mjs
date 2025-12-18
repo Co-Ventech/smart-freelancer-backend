@@ -23,7 +23,7 @@ Follow these exact rules:
 🔗 https://recruitinn.ai
 🔗 https://co-ventech.com
 🔗 https://skillbuilder.online 
-- End with a polite closing similar to: Lets connect in chat so that We discuss further. and “Best Regards \n ${name}”
+- End with a polite closing similar to: let's connect on a brief call to discuss this project further. and “Best Regards \n ${name}”
 `
 }
 
