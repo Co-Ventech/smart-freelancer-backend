@@ -15,11 +15,24 @@ Job Description: ${description}
 
 Follow these exact rules:
 - Start with “Hey ${clientName}, how are you?”
-- Second line: Start with "Although I am new to freelancer, I have over 5 years of experience in [client's related domain/skill/issue]", and express confidence in solving the client’s main issue.
-- Third and fourth lines: briefly explain your relevant experience and skills (align with job) In this section also make sure that if the Job aligns with any of the domains such as Web Development, QA, UIUX, Wordpress, etc , then add these domain specific skills as well here such as for QA, add skills like Cypress, Selenium , Automation Testing, Manual Testing, similarly if for Wordpress then add skills such as React.js, Node.js, Mongo DB , etc. Make sure that they are relevant to the job as well and not very lenghty.
-- End with a polite closing similar to: “Looking forward to hearing more about your vision...” and “Best Regards \n ${name}”
+- Second line: Start with "I went through your job post and it’s a strong match with my background. With over 5 years of practical experience working on real-world projects, I’ve shared links to relevant work below for your review.[client's related domain/skill/issue]", and express confidence in solving the client’s main issue.
+- Third and fourth lines: briefly explain your relevant experience and skills (align with job) In this section also make sure that if the Job aligns with any of the domains such as Web Development, QA, UIUX, Wordpress, etc , then add these Here are a few platforms I’ve contributed to or built testing frameworks for:🔗 https://www.micro1.ai
+🔗 https://gatherit.co
+🔗 https://bykea.com 
+🔗 https://recruitinn.ai
+🔗 https://co-ventech.com
+🔗 https://skillbuilder.online 
+- End with a polite closing similar to: Lets connect in chat so that We discuss further. and “Best Regards \n ${name}”
 `
 }
+
+// Follow these exact rules:
+// - Start with “Hey ${clientName}, how are you?”
+// - Second line: Start with "I went through your job post and it’s a strong match with my background. With over 5 years of practical experience working on real-world projects, I’ve shared links to relevant work below for your review.[client's related domain/skill/issue]", and express confidence in solving the client’s main issue.
+// - Third and fourth lines: briefly explain your relevant experience and skills (align with job) In this section also make sure that if the Job aligns with any of the domains such as Web Development, QA, UIUX, Wordpress, etc , then add these domain specific skills as well here such as for QA, add skills like Cypress, Selenium , Automation Testing, Manual Testing, similarly if for Wordpress then add skills such as React.js, Node.js, Mongo DB , etc. Make sure that they are relevant to the job as well and not very lenghty.
+// - End with a polite closing similar to: “Looking forward to hearing more about your vision..” and “Best Regards \n ${name}”
+// `
+// }
 
 // this is commented for future use
 // - Include this section exactly:
