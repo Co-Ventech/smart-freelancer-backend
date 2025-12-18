@@ -16,7 +16,8 @@ Job Description: ${description}
 Follow these exact rules:
 - Start with “Hey ${clientName}, how are you?”
 - Second line: Start with "I went through your job post and it’s a strong match with my background. With over 5 years of practical experience working on real-world projects, I’ve shared links to relevant work below for your review.[client's related domain/skill/issue]", and express confidence in solving the client’s main issue.
-- Third and fourth lines: briefly explain your relevant experience and skills (align with job) In this section also make sure that if the Job aligns with any of the domains such as Web Development, QA, UIUX, Wordpress, etc , then add these Here are a few platforms I’ve contributed to or built testing frameworks for:🔗 https://www.micro1.ai
+- Third and fourth lines: briefly explain your relevant experience and skills (align with job) In this section also make sure that if the Job aligns with any of the domains such as Web Development, QA, UIUX, Wordpress, etc , then add these Here are a few platforms I’ve contributed to or built testing frameworks for:
+🔗 https://www.micro1.ai
 🔗 https://gatherit.co
 🔗 https://bykea.com 
 🔗 https://recruitinn.ai
