@@ -16,7 +16,7 @@ export const fetchUserBidId = async (sub_user_access_token) => {
     return response.data?.result?.id || null;
 }
 
-export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub_user_access_token, excluded_countries) => {
+export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub_user_access_token, excluded_countries, allowed_currencies = null,clientFilters = {}) => {
     const from_time = getUnixTimestamp(60);
     try {
         const params = {
@@ -45,7 +45,7 @@ export const fetchProjectsOfUserService = async (skillIds, allowedCountries, sub
         // return both projects and users map (some endpoints include users in result)
         const resProjects = response.data?.result?.projects || [];
         const resUsers = response.data?.result?.users || {};
-        const filteredProjects = filterProjects(resProjects, resUsers, excluded_countries);
+        const filteredProjects = filterProjects(resProjects, resUsers, excluded_countries,allowed_currencies,clientFilters);
         return { projects: filteredProjects, users: resUsers };
     } catch (err) {
         console.error('Error fetching projects by skills:', err);

@@ -16,7 +16,7 @@ const subUserCollection = db.collection('sub-user');
 
 const alreadyBiddedCache = [];
 
-const TIMEOUT_FOR_BIDDING = 15000;
+const TIMEOUT_FOR_BIDDING = 10000;
 
 async function delayedBid(delay, token, bidAmount, bidderId, proposal, project, bidderName) {
     await new Promise(r => setTimeout(r, delay));
@@ -165,7 +165,7 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 
 
-export const autoBidService = async ({ clients, skills, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type }) => {
+export const autoBidService = async ({ clients, skills, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type,projectBudgetConfig = {} }) => {
 
     for (const project of projectsToBid) {
 
@@ -179,7 +179,7 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
         ) {
             try {
                  console.log('saveBidService: saving bid', { project_id: project.id, bidder_id: bidderId });
-                const bidAmount = calculateBidAmount(project);
+                const bidAmount = calculateBidAmount(project,projectBudgetConfig);
                 if (bidAmount === null) {
                     continue;
                 }
