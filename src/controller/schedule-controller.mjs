@@ -26,7 +26,8 @@ export const scheduleAutoBidController = async () => {
                 bidderId: user?.user_bid_id,
                 bidderName: user?.sub_username,
                 token: user?.sub_user_access_token,
-                autobid_type: user?.autobid_enabled_for_job_type
+                autobid_type: user?.autobid_enabled_for_job_type,
+                ai_templates: user?.ai_templates || []
             });
             console.log(autoBidResponse);
         }))
