@@ -35,6 +35,7 @@ export const scheduleAutoBidController = async () => {
                 bidderName: user?.sub_username,
                 token: user?.sub_user_access_token,
                 autobid_type: user?.autobid_enabled_for_job_type,
+                ai_templates: user?.ai_templates || [],
                 projectBudgetConfig
             });
             console.log(autoBidResponse);

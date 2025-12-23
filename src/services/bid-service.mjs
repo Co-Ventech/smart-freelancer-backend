@@ -165,7 +165,7 @@ export const toggleAutoBidService = async ({ bidder_id }) => {
 
 
 
-export const autoBidService = async ({ clients, skills, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type,projectBudgetConfig = {} }) => {
+export const autoBidService = async ({ clients, skills, sub_user_doc_id, projectsToBid, bidderId, token, bidderName, general_proposal, autobid_proposal_type, autobid_type, ai_templates,projectBudgetConfig = {} }) => {
 
     for (const project of projectsToBid) {
 
@@ -197,8 +197,8 @@ export const autoBidService = async ({ clients, skills, sub_user_doc_id, project
                 const clientName = clients[String(ownerId)]?.public_name;
 
                 const proposalResponse =
-                    autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED
-                        ? await generateAIProposal(clientName, project.title, project.description, bidderName)
+                    autobid_proposal_type === AUTOBID_PROPOSAL_TYPE.AI_GENERATED && ai_templates.length > 0
+                        ? await generateAIProposal(clientName, project.title, project.description, bidderName, ai_templates)
                         : null;
 
                 const proposal =
